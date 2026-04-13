@@ -306,6 +306,7 @@
           </div>
           <div class="filename">${image.filename}</div>
           <div class="actions">
+            <button class="save-btn replace-btn" type="button" data-id="${image.id}">Değiştir</button>
             <button class="delete-btn" type="button" data-id="${image.id}">Sil</button>
           </div>
         `;
@@ -315,6 +316,7 @@
 
       setupDragAndDrop();
       setupDeleteButtons();
+      setupReplaceButtons();
     }
 
     function setupDeleteButtons() {
@@ -338,6 +340,43 @@
         });
       });
     }
+
+    function setupReplaceButtons() {
+      document.querySelectorAll(".replace-btn").forEach((btn) => {
+        btn.addEventListener("click", async () => {
+          const id = Number(btn.dataset.id);
+
+          const input = document.createElement("input");
+          input.type = "file";
+          input.accept = "image/*";
+    
+          input.onchange = async () => {
+            if (!input.files.length) return;
+    
+            const fd = new FormData();
+            fd.append("id", String(id));
+            fd.append("file", input.files[0]);
+    
+            const res = await fetch("/api/replace", {
+              method: "POST",
+              body: fd
+            });
+    
+            const data = await res.json();
+    
+            if (!data.ok) {
+              showMessage(data.error || "Görsel değiştirilemedi", true);
+              return;
+            }
+    
+            showMessage("Görsel güncellendi.");
+            await loadState();
+          };
+    
+          input.click();
+    });
+  });
+}
 
     function setupDragAndDrop() {
       const grid = document.getElementById("imageGrid");
