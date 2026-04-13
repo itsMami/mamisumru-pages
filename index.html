@@ -717,10 +717,10 @@
       </div>
 
       <div class="map-labels">
-        <span class="label l1">Moonlit Corridor</span>
-        <span class="label l2">Secret Passage</span>
-        <span class="label l3">Whispering Hall</span>
-        <span class="label l4">Hidden Memories</span>
+        <span class="label l1">Kedoş</span>
+        <span class="label l2">Istova Sitesi</span>
+        <span class="label l3">Simba</span>
+        <span class="label l4">Sirius</span>
       </div>
 
       <div class="map-footprints">
@@ -735,15 +735,15 @@
       </div>
 
       <div class="map-content">
-        <div class="intro-note">Mischief Managed</div>
-        <div class="map-title">Büyülü Bir Sayfa Açılıyor...</div>
+        <div class="intro-note">Prensesim</div>
+        <div class="map-title">Seni Seviyorum. Doğum Günün Kutlu Olsun.</div>
         <div class="map-subtitle">
           I solemnly swear that I am up to something magical.
         </div>
       </div>
 
       <div class="map-seal">
-        <div class="seal-inner">MAGICAL<br>MEMORIES</div>
+        <div class="seal-inner">Hatıra<br>Defteri</div>
       </div>
     </div>
 
@@ -820,6 +820,26 @@
 
     window.addEventListener("load", tryPlayMusic);
   </script>
+  <script>
+  const introOverlay = document.getElementById("introOverlay");
+  const skipIntroBtn = document.getElementById("skipIntroBtn");
+
+  function closeIntro() {
+    if (!introOverlay) return;
+    introOverlay.classList.add("hidden");
+    sessionStorage.setItem("mamisumru_intro_seen", "1");
+
+    setTimeout(() => {
+      if (introOverlay) {
+        introOverlay.style.display = "none";
+      }
+    }, 1200);
+  }
+
   
+  setTimeout(closeIntro, 10000);
+
+  skipIntroBtn?.addEventListener("click", closeIntro);
+</script>
 </body>
 </html>
