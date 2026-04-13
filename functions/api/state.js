@@ -6,6 +6,10 @@ export async function onRequestGet(context) {
       "SELECT value FROM settings WHERE key = ? LIMIT 1"
     ).bind("refresh_time");
 
+    const currentStmt = env.DB.prepare(
+      "SELECT value FROM settings WHERE key = ? LIMIT 1"
+    ).bind("current_display");
+
     const imagesStmt = env.DB.prepare(`
       SELECT id, filename, r2_key, display_order, created_at, updated_at, enabled
       FROM images
@@ -13,12 +17,14 @@ export async function onRequestGet(context) {
       ORDER BY display_order ASC, id ASC
     `);
 
-    const [refreshResult, imagesResult] = await Promise.all([
+    const [refreshResult, currentResult, imagesResult] = await Promise.all([
       refreshStmt.first(),
+      currentStmt.first(),
       imagesStmt.all(),
     ]);
 
     const refreshTime = refreshResult ? Number(refreshResult.value) : 600;
+    const currentDisplay = currentResult ? currentResult.value : "";
     const images = (imagesResult.results || []).map((img) => ({
       ...img,
       image_url: `/api/image/${img.id}`
@@ -27,6 +33,7 @@ export async function onRequestGet(context) {
     return Response.json({
       ok: true,
       refresh_time: refreshTime,
+      current_display: currentDisplay,
       images,
     });
   } catch (error) {

@@ -138,6 +138,11 @@
       padding: 9px 12px;
       width: 100%;
     }
+    .replace-btn {
+      background: linear-gradient(135deg, #70535d, #5a4149);
+      color: #fffaf7;
+      width: 100%;
+    }
     .grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
@@ -228,9 +233,14 @@
   <div id="message"></div>
 
   <div class="box">
-    <strong>Şu anda gösterilen:</strong> <span id="currentDisplay">Bilinmiyor</span>
-    <div class="hint">Kartları sürükleyip sıralayın, ardından sırayı kaydedin.</div>
+  <strong>Şu anda gösterilen:</strong> <span id="currentDisplay">Bilinmiyor</span>
+  <div id="currentPreviewWrap" style="margin-top:14px; display:none;">
+    <div class="thumb-wrap" style="max-width:320px;">
+      <img id="currentPreview" class="thumb" src="" alt="Current display preview">
+    </div>
   </div>
+  <div class="hint">Kartları sürükleyip sıralayın, ardından sırayı kaydedin.</div>
+</div>
 
   <div class="box">
     <div class="row">
@@ -280,9 +290,23 @@
       }
 
       currentImages = data.images || [];
-      document.getElementById("refreshTime").value = data.refresh_time || 600;
-      document.getElementById("currentDisplay").textContent = currentDisplay || "Bilinmiyor";
-      renderImages();
+      currentDisplay = data.current_display || "";
+document.getElementById("refreshTime").value = data.refresh_time || 600;
+document.getElementById("currentDisplay").textContent = currentDisplay || "Bilinmiyor";
+
+const currentImage = (data.images || []).find(img => img.filename === currentDisplay);
+const previewWrap = document.getElementById("currentPreviewWrap");
+const previewImg = document.getElementById("currentPreview");
+
+if (currentImage) {
+  previewImg.src = currentImage.image_url;
+  previewWrap.style.display = "block";
+} else {
+  previewImg.src = "";
+  previewWrap.style.display = "none";
+}
+
+renderImages();
     }
 
     function renderImages() {
@@ -296,7 +320,7 @@
 
       currentImages.forEach((image) => {
         const card = document.createElement("div");
-        card.className = "card";
+        card.className = image.filename === currentDisplay ? "card current" : "card";
         card.draggable = true;
         card.dataset.id = image.id;
 
@@ -305,7 +329,8 @@
             <img class="thumb" src="${image.image_url}" alt="${image.filename}">
           </div>
           <div class="filename">${image.filename}</div>
-          <div class="actions">
+${image.filename === currentDisplay ? '<div class="badge">Şu an gösteriliyor</div>' : ''}
+<div class="actions">
             <button class="save-btn replace-btn" type="button" data-id="${image.id}">Değiştir</button>
             <button class="delete-btn" type="button" data-id="${image.id}">Sil</button>
           </div>
