@@ -5,222 +5,282 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Fotoğraf Paneli</title>
   <style>
-    * { box-sizing: border-box; }
-    body {
-      font-family: Arial, sans-serif;
-      max-width: 1280px;
-      margin: 0 auto;
-      padding: 34px 20px 42px 20px;
-      color: #f4ede8;
-      background:
-        radial-gradient(circle at top left, rgba(123, 43, 66, 0.22), transparent 30%),
-        radial-gradient(circle at bottom right, rgba(181, 116, 94, 0.14), transparent 28%),
-        linear-gradient(135deg, #0d0a0b, #151012 42%, #1d1518 100%);
-      min-height: 100vh;
-    }
-    .page-top { margin-bottom: 26px; position: relative; }
-    .title-wrap { position: relative; display: inline-block; }
-    .title-wrap::before {
-      content: "";
-      position: absolute;
-      left: -18px;
-      top: -16px;
-      width: 220px;
-      height: 95px;
-      background: radial-gradient(circle, rgba(143, 77, 98, 0.22), rgba(143, 77, 98, 0.00) 68%);
-      filter: blur(14px);
-      z-index: 0;
-      pointer-events: none;
-    }
-    h1 {
-      position: relative;
-      z-index: 1;
-      margin: 0 0 10px 0;
-      font-family: Georgia, "Times New Roman", serif;
-      font-size: 46px;
-      font-weight: 600;
-      color: #fff7f1;
-      letter-spacing: 0.01em;
-      text-shadow: 0 2px 16px rgba(0,0,0,0.24);
-    }
-    .top-note {
-      font-size: 14px;
-      color: #cfc1b8;
-      margin-bottom: 0;
-      line-height: 1.6;
-    }
-    .box {
-      padding: 24px;
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 24px;
-      margin-top: 22px;
-      background: linear-gradient(180deg, rgba(255,255,255,0.055), rgba(255,255,255,0.035));
-      box-shadow: 0 18px 44px rgba(0,0,0,0.30), inset 0 1px 0 rgba(255,255,255,0.03);
-      backdrop-filter: blur(10px);
-      animation: boxFade 0.7s ease;
-      animation-fill-mode: both;
-    }
-    @keyframes pageFade {
-      0% { opacity: 0; transform: translateY(10px); }
-      100% { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes boxFade {
-      0% { opacity: 0; transform: translateY(14px); }
-      100% { opacity: 1; transform: translateY(0); }
-    }
-    .page-top { animation: pageFade 0.7s ease; }
-    .box:nth-of-type(1) { animation-delay: 0.08s; }
-    .box:nth-of-type(2) { animation-delay: 0.16s; }
-    .box:nth-of-type(3) { animation-delay: 0.24s; }
-    .msg {
-      margin: 18px 0 0 0;
-      padding: 15px 16px;
-      background: rgba(255,255,255,0.08);
-      color: #f6ebe4;
-      border: 1px solid rgba(255,255,255,0.06);
-      border-radius: 16px;
-    }
-    .row {
-      display: flex;
-      gap: 18px;
-      flex-wrap: wrap;
-      align-items: end;
-    }
-    .field {
-      display: flex;
-      flex-direction: column;
-      gap: 9px;
-    }
-    label {
-      font-size: 14px;
-      color: #dbcfc7;
-      font-weight: 700;
-    }
-    input[type="number"] {
-      padding: 13px 14px;
-      border-radius: 14px;
-      border: 1px solid rgba(255,255,255,0.10);
-      background: rgba(255,255,255,0.06);
-      color: #fff7f1;
-      width: 210px;
-      outline: none;
-    }
-    input[type="file"] { color: #e7dad2; }
-    input[type="file"]::file-selector-button {
-      margin-right: 12px;
-      padding: 10px 14px;
-      border: none;
-      border-radius: 12px;
-      background: rgba(255,255,255,0.10);
-      color: #fff4ee;
-      cursor: pointer;
-    }
-    button {
-      padding: 12px 16px;
-      border: none;
-      border-radius: 14px;
-      cursor: pointer;
-      font-weight: 700;
-      transition: 0.18s ease;
-    }
-    button:hover { transform: translateY(-1px); filter: brightness(1.04); }
-    .upload-btn {
-      background: linear-gradient(135deg, #8f4d62, #6f364b);
-      color: #fffaf7;
-    }
-    .save-btn {
-      background: linear-gradient(135deg, #70535d, #5a4149);
-      color: #fffaf7;
-    }
-    .delete-btn {
-      background: linear-gradient(135deg, #a13f46, #7f2e34);
-      color: white;
-      padding: 9px 12px;
-      width: 100%;
-    }
-    .replace-btn {
-      background: linear-gradient(135deg, #70535d, #5a4149);
-      color: #fffaf7;
-      width: 100%;
-    }
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-      gap: 22px;
-      margin-top: 18px;
-    }
-    .card {
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 22px;
-      background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.04));
-      overflow: hidden;
-      padding: 13px;
-      cursor: grab;
-      user-select: none;
-      box-shadow: 0 16px 30px rgba(0,0,0,0.24);
-      transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
-    }
-    .card:hover {
-      transform: translateY(-4px) scale(1.01);
-      border-color: rgba(219, 176, 151, 0.20);
-      box-shadow: 0 22px 38px rgba(0,0,0,0.30);
-    }
-    .card.dragging { opacity: 0.45; transform: scale(0.98); }
-    .card.drag-over { outline: 3px dashed rgba(219, 176, 151, 0.85); outline-offset: 2px; }
-    .thumb-wrap {
-      width: 100%;
-      height: 180px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: linear-gradient(180deg, rgba(0,0,0,0.16), rgba(0,0,0,0.24));
-      border-radius: 14px;
-      overflow: hidden;
-    }
-    .thumb {
-      max-width: 100%;
-      max-height: 100%;
-      display: block;
-      pointer-events: none;
-    }
-    .filename {
-      margin-top: 13px;
-      font-size: 14px;
-      word-break: break-word;
-      min-height: 38px;
-      color: #f1e7e1;
-      line-height: 1.5;
-    }
-    .badge {
-      display: inline-block;
-      margin-top: 8px;
-      padding: 6px 10px;
-      border-radius: 999px;
-      font-size: 12px;
-      background: rgba(219, 176, 151, 0.16);
-      color: #ffe8d9;
-      border: 1px solid rgba(219, 176, 151, 0.25);
-    }
-    .helper, .hint {
-      font-size: 13px;
-      color: #bbaaa1;
-      margin-top: 10px;
-      line-height: 1.6;
-    }
-    .section-title {
-      margin: 0;
-      font-size: 24px;
-      color: #fff4ed;
-      font-family: Georgia, "Times New Roman", serif;
-      font-weight: 600;
-    }
-    @media (max-width: 700px) {
-      body { padding: 20px 14px 30px 14px; }
-      h1 { font-size: 34px; }
-      .box { padding: 17px; border-radius: 18px; }
-      button, input[type="number"] { width: 100%; }
-    }
-  </style>
+  * { box-sizing: border-box; }
+
+  body {
+    font-family: Arial, sans-serif;
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 34px 20px 42px 20px;
+    color: #f4ede8;
+    background:
+      radial-gradient(circle at top left, rgba(123, 43, 66, 0.12), transparent 28%),
+      radial-gradient(circle at bottom right, rgba(181, 116, 94, 0.12), transparent 26%),
+      linear-gradient(135deg, #0b0d12, #14171e 42%, #1b1511 100%);
+    min-height: 100vh;
+  }
+
+  .page-top {
+    margin-bottom: 26px;
+    position: relative;
+  }
+
+  .title-wrap {
+    position: relative;
+    display: inline-block;
+  }
+
+  .title-wrap::before {
+    content: "";
+    position: absolute;
+    left: -18px;
+    top: -16px;
+    width: 240px;
+    height: 95px;
+    background: radial-gradient(circle, rgba(181, 138, 54, 0.22), rgba(181, 138, 54, 0.00) 68%);
+    filter: blur(14px);
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  h1 {
+    position: relative;
+    z-index: 1;
+    margin: 0 0 10px 0;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 46px;
+    font-weight: 600;
+    color: #fff3dc;
+    letter-spacing: 0.01em;
+    text-shadow: 0 2px 16px rgba(0,0,0,0.24);
+  }
+
+  .top-note {
+    font-size: 14px;
+    color: #d0c3ad;
+    margin-bottom: 0;
+    line-height: 1.6;
+  }
+
+  .box {
+    padding: 24px;
+    border: 1px solid rgba(214, 177, 92, 0.12);
+    border-radius: 24px;
+    margin-top: 22px;
+    background:
+      linear-gradient(180deg, rgba(47, 37, 28, 0.58), rgba(25, 24, 28, 0.48));
+    box-shadow:
+      0 18px 44px rgba(0,0,0,0.30),
+      inset 0 1px 0 rgba(255,231,180,0.03);
+    backdrop-filter: blur(10px);
+    animation: boxFade 0.7s ease;
+    animation-fill-mode: both;
+  }
+
+  @keyframes pageFade {
+    0% { opacity: 0; transform: translateY(10px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes boxFade {
+    0% { opacity: 0; transform: translateY(14px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+
+  .page-top { animation: pageFade 0.7s ease; }
+  .box:nth-of-type(1) { animation-delay: 0.08s; }
+  .box:nth-of-type(2) { animation-delay: 0.16s; }
+  .box:nth-of-type(3) { animation-delay: 0.24s; }
+
+  .msg {
+    margin: 18px 0 0 0;
+    padding: 15px 16px;
+    background: rgba(255,255,255,0.08);
+    color: #f6ebe4;
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 16px;
+  }
+
+  .row {
+    display: flex;
+    gap: 18px;
+    flex-wrap: wrap;
+    align-items: end;
+  }
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+  }
+
+  label {
+    font-size: 14px;
+    color: #e0d2b9;
+    font-weight: 700;
+  }
+
+  input[type="number"] {
+    padding: 13px 14px;
+    border-radius: 14px;
+    border: 1px solid rgba(255,255,255,0.10);
+    background: rgba(255,255,255,0.06);
+    color: #fff7f1;
+    width: 210px;
+    outline: none;
+  }
+
+  input[type="file"] {
+    color: #e7dad2;
+  }
+
+  input[type="file"]::file-selector-button {
+    margin-right: 12px;
+    padding: 10px 14px;
+    border: none;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.10);
+    color: #fff4ee;
+    cursor: pointer;
+  }
+
+  button {
+    padding: 12px 16px;
+    border: none;
+    border-radius: 14px;
+    cursor: pointer;
+    font-weight: 700;
+    transition: 0.18s ease;
+  }
+
+  button:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.04);
+  }
+
+  .upload-btn {
+    background: linear-gradient(135deg, #8d6a2e, #694b21);
+    color: #fffaf7;
+    box-shadow: 0 12px 28px rgba(105, 75, 33, 0.28);
+  }
+
+  .save-btn, .replace-btn {
+    background: linear-gradient(135deg, #5f4b2f, #473521);
+    color: #fffaf7;
+    box-shadow: 0 12px 28px rgba(70, 45, 25, 0.24);
+  }
+
+  .delete-btn {
+    background: linear-gradient(135deg, #7e3030, #5d2020);
+    color: white;
+    padding: 9px 12px;
+    width: 100%;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 22px;
+    margin-top: 18px;
+  }
+
+  .card {
+    border: 1px solid rgba(214, 177, 92, 0.12);
+    border-radius: 22px;
+    background:
+      linear-gradient(180deg, rgba(48, 38, 29, 0.64), rgba(28, 28, 31, 0.52));
+    overflow: hidden;
+    padding: 13px;
+    cursor: grab;
+    user-select: none;
+    box-shadow: 0 16px 30px rgba(0,0,0,0.24);
+    transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
+  }
+
+  .card:hover {
+    transform: translateY(-4px) scale(1.01);
+    border-color: rgba(214, 177, 92, 0.24);
+    box-shadow: 0 22px 38px rgba(0,0,0,0.30);
+  }
+
+  .card.dragging {
+    opacity: 0.45;
+    transform: scale(0.98);
+  }
+
+  .card.drag-over {
+    outline: 3px dashed rgba(214, 177, 92, 0.82);
+    outline-offset: 2px;
+  }
+
+  .card.current {
+    border: 2px solid rgba(214, 177, 92, 0.95);
+    box-shadow:
+      0 0 0 3px rgba(214, 177, 92, 0.10),
+      0 18px 36px rgba(0,0,0,0.28);
+  }
+
+  .thumb-wrap {
+    width: 100%;
+    height: 180px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background:
+      linear-gradient(180deg, rgba(10, 10, 10, 0.18), rgba(25, 20, 15, 0.28));
+    border-radius: 14px;
+    overflow: hidden;
+  }
+
+  .thumb {
+    max-width: 100%;
+    max-height: 100%;
+    display: block;
+    pointer-events: none;
+  }
+
+  .filename {
+    margin-top: 13px;
+    font-size: 14px;
+    word-break: break-word;
+    min-height: 38px;
+    color: #f2e7da;
+    line-height: 1.5;
+  }
+
+  .badge {
+    display: inline-block;
+    margin-top: 8px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    background: rgba(214, 177, 92, 0.14);
+    color: #ffe9bf;
+    border: 1px solid rgba(214, 177, 92, 0.24);
+  }
+
+  .helper, .hint {
+    font-size: 13px;
+    color: #bfae91;
+    margin-top: 10px;
+    line-height: 1.6;
+  }
+
+  .section-title {
+    margin: 0;
+    font-size: 24px;
+    color: #fff0d0;
+    font-family: Georgia, "Times New Roman", serif;
+    font-weight: 600;
+  }
+
+  @media (max-width: 700px) {
+    body { padding: 20px 14px 30px 14px; }
+    h1 { font-size: 34px; }
+    .box { padding: 17px; border-radius: 18px; }
+    button, input[type="number"] { width: 100%; }
+  }
+</style>
 </head>
 <body>
   <div style="margin-bottom: 18px;">
@@ -242,7 +302,7 @@
   </div>
   <div class="page-top">
     <div class="title-wrap">
-      <h1>Fotoğraf Paneli</h1>
+      <h1>Büyülü Fotoğraf Arşivi</h1>
     </div>
     <p class="top-note">Yüklediğin fotoğraflar bu sitede kalıcak, cihaz açılınca internet üstünden kendini güncellicek <3.</p>
   </div>
