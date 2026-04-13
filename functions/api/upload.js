@@ -47,8 +47,8 @@ export async function onRequestPost(context) {
       const nextOrder = Number(maxOrderRow?.max_order ?? -1) + 1;
 
       await env.DB.prepare(`
-        INSERT INTO images (filename, r2_key, display_order, enabled)
-        VALUES (?, ?, ?, 1)
+        INSERT INTO images (filename, r2_key, display_order, enabled, updated_at)
+        VALUES (?, ?, ?, 1, CURRENT_TIMESTAMP)
       `).bind(file.name, key, nextOrder).run();
 
       const inserted = await env.DB.prepare(`

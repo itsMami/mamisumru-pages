@@ -7,7 +7,7 @@ export async function onRequestGet(context) {
     ).bind("refresh_time");
 
     const imagesStmt = env.DB.prepare(`
-      SELECT id, filename, r2_key, display_order, created_at, enabled
+      SELECT id, filename, r2_key, display_order, created_at, updated_at, enabled
       FROM images
       WHERE enabled = 1
       ORDER BY display_order ASC, id ASC
