@@ -402,52 +402,62 @@ ${image.filename === currentDisplay ? '<div class="badge">Şu an gösteriliyor</
     });
   });
 }
+let isDraggingNow = false;
 
-    function setupDragAndDrop() {
-      const grid = document.getElementById("imageGrid");
-      let draggedCard = null;
-      const cards = grid.querySelectorAll(".card");
+function setupDragAndDrop() {
+  const grid = document.getElementById("imageGrid");
+  let draggedCard = null;
+  const cards = grid.querySelectorAll(".card");
 
-      cards.forEach(card => {
-        card.addEventListener("dragstart", () => {
-          draggedCard = card;
-          card.classList.add("dragging");
-        });
+  cards.forEach(card => {
+    card.addEventListener("dragstart", () => {
+      draggedCard = card;
+      isDraggingNow = true;
+      card.classList.add("dragging");
+    });
 
-        card.addEventListener("dragend", () => {
-          card.classList.remove("dragging");
-          cards.forEach(c => c.classList.remove("drag-over"));
-        });
+    card.addEventListener("dragend", () => {
+      card.classList.remove("dragging");
+      cards.forEach(c => c.classList.remove("drag-over"));
+      isDraggingNow = false;
+    });
 
-        card.addEventListener("dragover", (e) => e.preventDefault());
+    card.addEventListener("dragover", (e) => e.preventDefault());
 
-        card.addEventListener("dragenter", (e) => {
-          e.preventDefault();
-          if (card !== draggedCard) card.classList.add("drag-over");
-        });
+    card.addEventListener("dragenter", (e) => {
+      e.preventDefault();
+      if (card !== draggedCard) card.classList.add("drag-over");
+    });
 
-        card.addEventListener("dragleave", () => {
-          card.classList.remove("drag-over");
-        });
+    card.addEventListener("dragleave", () => {
+      card.classList.remove("drag-over");
+    });
 
-        card.addEventListener("drop", (e) => {
-          e.preventDefault();
-          card.classList.remove("drag-over");
-          if (!draggedCard || draggedCard === card) return;
+    card.addEventListener("drop", (e) => {
+      e.preventDefault();
+      card.classList.remove("drag-over");
 
-          const allCards = [...grid.querySelectorAll(".card")];
-          const draggedIndex = allCards.indexOf(draggedCard);
-          const targetIndex = allCards.indexOf(card);
+      if (!draggedCard || draggedCard === card) return;
 
-          if (draggedIndex < targetIndex) {
-            card.after(draggedCard);
-          } else {
-            card.before(draggedCard);
-          }
-        });
-      });
-    }
+      const allCards = [...grid.querySelectorAll(".card")];
+      const draggedIndex = allCards.indexOf(draggedCard);
+      const targetIndex = allCards.indexOf(card);
 
+      if (draggedIndex < targetIndex) {
+        card.after(draggedCard);
+      } else {
+        card.before(draggedCard);
+      }
+    });
+  });
+}
+
+loadState();
+setInterval(() => {
+  if (!isDraggingNow) {
+    loadState();
+  }
+}, 30000);
     document.getElementById("uploadForm").addEventListener("submit", async (e) => {
       e.preventDefault();
       const input = document.getElementById("fileInput");
@@ -514,6 +524,7 @@ ${image.filename === currentDisplay ? '<div class="badge">Şu an gösteriliyor</
     });
 
     loadState();
+    setInterval(loadState,30000);
   </script>
 </body>
 </html>
