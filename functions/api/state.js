@@ -27,7 +27,7 @@ export async function onRequestGet(context) {
     const currentDisplay = currentResult ? currentResult.value : "";
     const images = (imagesResult.results || []).map((img) => ({
       ...img,
-      image_url: `/api/image/${img.id}`
+      image_url: `/api/image/${img.id}?v=${encodeURIComponent(img.updated_at || img.created_at || "")}`
     }));
 
     return Response.json({

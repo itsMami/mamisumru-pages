@@ -36,7 +36,7 @@ export async function onRequestGet(context) {
       else headers.set("Content-Type", "application/octet-stream");
     }
 
-    headers.set("Cache-Control", "public, max-age=3600");
+    headers.set("Cache-Control", "no-cache");
     if (object.httpEtag) {
       headers.set("ETag", object.httpEtag);
     }
