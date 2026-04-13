@@ -291,22 +291,25 @@
 
       currentImages = data.images || [];
       currentDisplay = data.current_display || "";
-document.getElementById("refreshTime").value = data.refresh_time || 600;
-document.getElementById("currentDisplay").textContent = currentDisplay || "Bilinmiyor";
+        document.getElementById("refreshTime").value = data.refresh_time || 600;
+        
+        const currentImage = (data.images || []).find(img => img.local_name === currentDisplay);
+        
+        document.getElementById("currentDisplay").textContent =
+          currentImage ? currentImage.filename : (currentDisplay || "Bilinmiyor");
+        
+        const previewWrap = document.getElementById("currentPreviewWrap");
+        const previewImg = document.getElementById("currentPreview");
+        
+        if (currentImage) {
+          previewImg.src = currentImage.image_url;
+          previewWrap.style.display = "block";
+        } else {
+          previewImg.src = "";
+          previewWrap.style.display = "none";
+        }
 
-const currentImage = (data.images || []).find(img => img.filename === currentDisplay);
-const previewWrap = document.getElementById("currentPreviewWrap");
-const previewImg = document.getElementById("currentPreview");
-
-if (currentImage) {
-  previewImg.src = currentImage.image_url;
-  previewWrap.style.display = "block";
-} else {
-  previewImg.src = "";
-  previewWrap.style.display = "none";
-}
-
-renderImages();
+      renderImages();
     }
 
     function renderImages() {
@@ -320,7 +323,7 @@ renderImages();
 
       currentImages.forEach((image) => {
         const card = document.createElement("div");
-        card.className = image.filename === currentDisplay ? "card current" : "card";
+        card.className = image.local_name === currentDisplay ? "card current" : "card";
         card.draggable = true;
         card.dataset.id = image.id;
 
@@ -328,9 +331,9 @@ renderImages();
           <div class="thumb-wrap">
             <img class="thumb" src="${image.image_url}" alt="${image.filename}">
           </div>
-          <div class="filename">${image.filename}</div>
-${image.filename === currentDisplay ? '<div class="badge">Şu an gösteriliyor</div>' : ''}
-<div class="actions">
+          <div class="filename">${image.filename}<br><span style="opacity:.65;font-size:12px;">${image.local_name}</span></div>
+        ${image.local_name === currentDisplay ? '<div class="badge">Şu an gösteriliyor</div>' : ''}
+          <div class="actions">
             <button class="save-btn replace-btn" type="button" data-id="${image.id}">Değiştir</button>
             <button class="delete-btn" type="button" data-id="${image.id}">Sil</button>
           </div>
