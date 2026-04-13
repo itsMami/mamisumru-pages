@@ -242,10 +242,10 @@
   </div>
 
   <div style="margin-top:14px;">
-    <strong>Sıradaki görsel:</strong> <span id="nextImageCountdown">--:--</span>
+    <strong>Sıradaki Fotoğraf:</strong> <span id="nextImageCountdown">--:--</span>
   </div>
 
-  <div class="hint">Kartları sürükleyip sırala, sonra sıralamayı kaydet.</div>
+  <div class="hint">Fotoğrafları basılı tutup istediğin sıraya dizebilirsin güzelim.</div>
 </div>
 
   <div class="box">
@@ -283,7 +283,6 @@
     let refreshTimeSeconds = 600;
     let countdownRemaining = 600;
     let countdownInterval = null;
-    let lastSeenDisplay = "";
 
     function showMessage(text, isError = false) {
       const el = document.getElementById("message");
@@ -301,25 +300,37 @@
       document.getElementById("nextImageCountdown").textContent = formatCountdown(countdownRemaining);
     }
     
-    function startCountdown(seconds) {
-      refreshTimeSeconds = seconds;
-      countdownRemaining = seconds;
+    function startCountdownFromTimestamp(lastChangeTime, refreshSeconds) {
+      refreshTimeSeconds = refreshSeconds;
     
       if (countdownInterval) {
         clearInterval(countdownInterval);
       }
     
-      updateCountdownUI();
-    
-      countdownInterval = setInterval(() => {
-        countdownRemaining -= 1;
-    
-        if (countdownRemaining < 0) {
-          countdownRemaining = 0;
+      function recalc() {
+        if (!lastChangeTime) {
+          countdownRemaining = refreshSeconds;
+          updateCountdownUI();
+          return;
         }
     
+        const lastMs = new Date(lastChangeTime).getTime();
+        if (Number.isNaN(lastMs)) {
+          countdownRemaining = refreshSeconds;
+          updateCountdownUI();
+          return;
+        }
+    
+        const nowMs = Date.now();
+        const elapsed = Math.floor((nowMs - lastMs) / 1000);
+        const remaining = refreshSeconds - elapsed;
+    
+        countdownRemaining = remaining > 0 ? remaining : 0;
         updateCountdownUI();
-      }, 1000);
+      }
+    
+      recalc();
+      countdownInterval = setInterval(recalc, 1000);
     }
     async function loadState() {
       const res = await fetch("/api/state");
@@ -332,7 +343,10 @@
     
       currentImages = data.images || [];
       currentDisplay = data.current_display || "";
-      document.getElementById("refreshTime").value = data.refresh_time || 600;
+      const lastChangeTime = data.last_change_time || "";
+      const incomingRefresh = Number(data.refresh_time || 600);
+    
+      document.getElementById("refreshTime").value = incomingRefresh;
     
       const currentImage = currentImages.find(img => img.local_name === currentDisplay);
     
@@ -350,13 +364,7 @@
         previewWrap.style.display = "none";
       }
     
-      const incomingRefresh = Number(data.refresh_time || 600);
-    
-      if (lastSeenDisplay !== currentDisplay || refreshTimeSeconds !== incomingRefresh) {
-        startCountdown(incomingRefresh);
-        lastSeenDisplay = currentDisplay;
-      }
-    
+      startCountdownFromTimestamp(lastChangeTime, incomingRefresh);
       renderImages();
     }
 

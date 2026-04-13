@@ -10,6 +10,10 @@ export async function onRequestGet(context) {
       "SELECT value FROM settings WHERE key = ? LIMIT 1"
     ).bind("current_display");
 
+    const lastChangeStmt = env.DB.prepare(
+      "SELECT value FROM settings WHERE key = ? LIMIT 1"
+    ).bind("last_change_time");
+
     const imagesStmt = env.DB.prepare(`
       SELECT id, filename, r2_key, display_order, created_at, updated_at, enabled
       FROM images
@@ -17,14 +21,17 @@ export async function onRequestGet(context) {
       ORDER BY display_order ASC, id ASC
     `);
 
-    const [refreshResult, currentResult, imagesResult] = await Promise.all([
+    const [refreshResult, currentResult, lastChangeResult, imagesResult] = await Promise.all([
       refreshStmt.first(),
       currentStmt.first(),
+      lastChangeStmt.first(),
       imagesStmt.all(),
     ]);
 
     const refreshTime = refreshResult ? Number(refreshResult.value) : 600;
     const currentDisplay = currentResult ? currentResult.value : "";
+    const lastChangeTime = lastChangeResult ? lastChangeResult.value : "";
+
     const images = (imagesResult.results || []).map((img) => ({
       ...img,
       image_url: `/api/image/${img.id}?v=${encodeURIComponent(img.updated_at || img.created_at || "")}`,
@@ -35,6 +42,7 @@ export async function onRequestGet(context) {
       ok: true,
       refresh_time: refreshTime,
       current_display: currentDisplay,
+      last_change_time: lastChangeTime,
       images,
     });
   } catch (error) {
