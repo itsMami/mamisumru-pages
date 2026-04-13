@@ -227,19 +227,25 @@
     <div class="title-wrap">
       <h1>Fotoğraf Paneli</h1>
     </div>
-    <p class="top-note">Yüklenen görseller Cloudflare üzerinde saklanır ve Pi çevrimiçi olduğunda senkronlanır.</p>
+    <p class="top-note">Yüklediğin fotoğraflar bu sitede kalıcak, cihaz açılınca internet üstünden kendini güncellicek <3.</p>
   </div>
 
   <div id="message"></div>
 
   <div class="box">
   <strong>Şu anda gösterilen:</strong> <span id="currentDisplay">Bilinmiyor</span>
+
   <div id="currentPreviewWrap" style="margin-top:14px; display:none;">
     <div class="thumb-wrap" style="max-width:320px;">
       <img id="currentPreview" class="thumb" src="" alt="Current display preview">
     </div>
   </div>
-  <div class="hint">Kartları sürükleyip sıralayın, ardından sırayı kaydedin.</div>
+
+  <div style="margin-top:14px;">
+    <strong>Sıradaki görsel:</strong> <span id="nextImageCountdown">--:--</span>
+  </div>
+
+  <div class="hint">Kartları sürükleyip sırala, sonra sıralamayı kaydet.</div>
 </div>
 
   <div class="box">
@@ -274,41 +280,83 @@
   <script>
     let currentImages = [];
     let currentDisplay = "";
+    let refreshTimeSeconds = 600;
+    let countdownRemaining = 600;
+    let countdownInterval = null;
+    let lastSeenDisplay = "";
 
     function showMessage(text, isError = false) {
       const el = document.getElementById("message");
       el.innerHTML = `<div class="msg" style="${isError ? 'border-color: rgba(200,80,80,0.35);' : ''}">${text}</div>`;
     }
 
+    function formatCountdown(seconds) {
+      const safe = Math.max(0, Math.floor(seconds));
+      const mins = String(Math.floor(safe / 60)).padStart(2, "0");
+      const secs = String(safe % 60).padStart(2, "0");
+      return `${mins}:${secs}`;
+    }
+    
+    function updateCountdownUI() {
+      document.getElementById("nextImageCountdown").textContent = formatCountdown(countdownRemaining);
+    }
+    
+    function startCountdown(seconds) {
+      refreshTimeSeconds = seconds;
+      countdownRemaining = seconds;
+    
+      if (countdownInterval) {
+        clearInterval(countdownInterval);
+      }
+    
+      updateCountdownUI();
+    
+      countdownInterval = setInterval(() => {
+        countdownRemaining -= 1;
+    
+        if (countdownRemaining < 0) {
+          countdownRemaining = 0;
+        }
+    
+        updateCountdownUI();
+      }, 1000);
+    }
     async function loadState() {
       const res = await fetch("/api/state");
       const data = await res.json();
-
+    
       if (!data.ok) {
         showMessage(data.error || "Durum yüklenemedi", true);
         return;
       }
-
+    
       currentImages = data.images || [];
       currentDisplay = data.current_display || "";
-        document.getElementById("refreshTime").value = data.refresh_time || 600;
-        
-        const currentImage = (data.images || []).find(img => img.local_name === currentDisplay);
-        
-        document.getElementById("currentDisplay").textContent =
-          currentImage ? currentImage.filename : (currentDisplay || "Bilinmiyor");
-        
-        const previewWrap = document.getElementById("currentPreviewWrap");
-        const previewImg = document.getElementById("currentPreview");
-        
-        if (currentImage) {
-          previewImg.src = currentImage.image_url;
-          previewWrap.style.display = "block";
-        } else {
-          previewImg.src = "";
-          previewWrap.style.display = "none";
-        }
-
+      document.getElementById("refreshTime").value = data.refresh_time || 600;
+    
+      const currentImage = currentImages.find(img => img.local_name === currentDisplay);
+    
+      document.getElementById("currentDisplay").textContent =
+        currentImage ? currentImage.filename : (currentDisplay || "Bilinmiyor");
+    
+      const previewWrap = document.getElementById("currentPreviewWrap");
+      const previewImg = document.getElementById("currentPreview");
+    
+      if (currentImage) {
+        previewImg.src = currentImage.image_url;
+        previewWrap.style.display = "block";
+      } else {
+        previewImg.src = "";
+        previewWrap.style.display = "none";
+      }
+    
+      const incomingRefresh = Number(data.refresh_time || 600);
+    
+      if (lastSeenDisplay !== currentDisplay || refreshTimeSeconds !== incomingRefresh) {
+        startCountdown(incomingRefresh);
+        lastSeenDisplay = currentDisplay;
+      }
+    
       renderImages();
     }
 
