@@ -1,0 +1,565 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Büyülü Müzik Odası</title>
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      color: #f4ead7;
+      background:
+        radial-gradient(circle at top left, rgba(211, 156, 65, 0.12), transparent 24%),
+        radial-gradient(circle at bottom right, rgba(119, 51, 34, 0.16), transparent 24%),
+        linear-gradient(135deg, #0a0c10 0%, #13161d 38%, #1b1512 100%);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .sparkles {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 0;
+    }
+
+    .sparkle {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: rgba(255, 223, 158, 0.95);
+      box-shadow: 0 0 12px rgba(255, 199, 92, 0.58);
+      animation: sparkleFloat linear infinite;
+    }
+
+    .sparkle:nth-child(1)  { left: 8%; top: 90%; animation-duration: 13s; animation-delay: 0s; }
+    .sparkle:nth-child(2)  { left: 18%; top: 97%; animation-duration: 17s; animation-delay: 2s; }
+    .sparkle:nth-child(3)  { left: 30%; top: 93%; animation-duration: 15s; animation-delay: 4s; }
+    .sparkle:nth-child(4)  { left: 41%; top: 95%; animation-duration: 18s; animation-delay: 1s; }
+    .sparkle:nth-child(5)  { left: 52%; top: 91%; animation-duration: 14s; animation-delay: 5s; }
+    .sparkle:nth-child(6)  { left: 63%; top: 97%; animation-duration: 19s; animation-delay: 3s; }
+    .sparkle:nth-child(7)  { left: 74%; top: 94%; animation-duration: 16s; animation-delay: 6s; }
+    .sparkle:nth-child(8)  { left: 84%; top: 96%; animation-duration: 12s; animation-delay: 2.5s; }
+    .sparkle:nth-child(9)  { left: 92%; top: 92%; animation-duration: 20s; animation-delay: 4.5s; }
+
+    @keyframes sparkleFloat {
+      0% { transform: translateY(0) scale(0.8); opacity: 0; }
+      12% { opacity: 0.6; }
+      50% { opacity: 0.95; }
+      100% { transform: translateY(-120vh) scale(1.2); opacity: 0; }
+    }
+
+    .page {
+      position: relative;
+      z-index: 1;
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 28px 18px 42px;
+    }
+
+    .back-row {
+      margin-bottom: 18px;
+    }
+
+    .back-link {
+      display: inline-block;
+      text-decoration: none;
+      color: #f9eed7;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.10);
+      padding: 10px 16px;
+      border-radius: 999px;
+      box-shadow: 0 8px 18px rgba(0,0,0,0.18);
+      font-weight: 700;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 26px;
+      align-items: stretch;
+      background: linear-gradient(180deg, rgba(38, 29, 22, 0.78), rgba(18, 20, 27, 0.72));
+      border: 1px solid rgba(209, 167, 90, 0.14);
+      border-radius: 30px;
+      padding: 28px;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.42), inset 0 1px 0 rgba(255,236,186,0.03);
+      backdrop-filter: blur(8px);
+      overflow: hidden;
+    }
+
+    .left-col, .right-col {
+      min-width: 0;
+    }
+
+    .eyebrow {
+      font-size: 12px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: #d9b36c;
+      margin-bottom: 14px;
+    }
+
+    h1 {
+      margin: 0 0 12px 0;
+      font-size: 48px;
+      line-height: 1.05;
+      color: #fff0d2;
+    }
+
+    .subtitle {
+      font-family: Arial, sans-serif;
+      font-size: 16px;
+      line-height: 1.8;
+      color: #ddcfb7;
+      max-width: 580px;
+      margin-bottom: 20px;
+    }
+
+    .player-card,
+    .playlist-card {
+      background: linear-gradient(180deg, rgba(255,244,216,0.04), rgba(255,244,216,0.02));
+      border: 1px solid rgba(214, 177, 92, 0.10);
+      border-radius: 22px;
+      padding: 20px;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
+    }
+
+    .player-card {
+      display: grid;
+      grid-template-columns: 140px 1fr;
+      gap: 20px;
+      align-items: center;
+    }
+
+    .record-wrap {
+      position: relative;
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at center, #3d2b1a 0 18px, #8e6833 18px 24px, #21160f 24px 100%);
+      box-shadow:
+        inset 0 0 0 1px rgba(255,222,166,0.08),
+        0 12px 24px rgba(0,0,0,0.28);
+      margin: 0 auto;
+    }
+
+    .record-wrap::before {
+      content: "";
+      position: absolute;
+      inset: 12px;
+      border-radius: 50%;
+      border: 1px solid rgba(255,223,165,0.08);
+    }
+
+    .record-wrap.spinning {
+      animation: spin 5s linear infinite;
+    }
+
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .track-name {
+      font-size: 28px;
+      color: #fff0d2;
+      margin-bottom: 10px;
+      word-break: break-word;
+    }
+
+    .track-meta {
+      font-family: Arial, sans-serif;
+      color: #d2c1a4;
+      font-size: 14px;
+      line-height: 1.7;
+      margin-bottom: 18px;
+    }
+
+    .progress-wrap {
+      margin-bottom: 18px;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.08);
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .progress-fill {
+      width: 0%;
+      height: 100%;
+      background: linear-gradient(90deg, #9a712f, #e0bf7a);
+      border-radius: 999px;
+      transition: width 0.5s ease;
+      box-shadow: 0 0 14px rgba(224,191,122,0.22);
+    }
+
+    .time-row {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 8px;
+      font-family: Arial, sans-serif;
+      font-size: 13px;
+      color: #cdbb9c;
+    }
+
+    .controls {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .control-btn {
+      border: 1px solid rgba(255, 220, 164, 0.10);
+      background: linear-gradient(135deg, #8f6a2d, #6e4c1e);
+      color: #fff7eb;
+      font-weight: 700;
+      cursor: pointer;
+      padding: 12px 14px;
+      border-radius: 14px;
+      min-width: 100px;
+      box-shadow: 0 12px 22px rgba(111, 77, 31, 0.22);
+    }
+
+    .control-btn.secondary {
+      background: linear-gradient(135deg, #5f4b2f, #473521);
+    }
+
+    .volume-wrap {
+      margin-top: 8px;
+    }
+
+    .volume-label {
+      font-family: Arial, sans-serif;
+      font-size: 14px;
+      color: #e0d2b9;
+      margin-bottom: 8px;
+    }
+
+    .volume-row {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    input[type="range"] {
+      width: 100%;
+    }
+
+    .section-title {
+      margin: 0 0 14px 0;
+      font-size: 28px;
+      color: #fff0d2;
+    }
+
+    .playlist-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      max-height: 540px;
+      overflow: auto;
+      padding-right: 4px;
+    }
+
+    .song-item {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: center;
+      padding: 14px 14px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.06);
+      transition: 0.18s ease;
+    }
+
+    .song-item.active {
+      border-color: rgba(214, 177, 92, 0.34);
+      box-shadow: 0 0 0 2px rgba(214, 177, 92, 0.08);
+      background: rgba(214, 177, 92, 0.06);
+    }
+
+    .song-name {
+      font-family: Arial, sans-serif;
+      font-size: 15px;
+      line-height: 1.5;
+      color: #f4e8d8;
+      word-break: break-word;
+    }
+
+    .song-action {
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.08);
+      color: #fff4e3;
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    .status-box {
+      margin-top: 14px;
+      padding: 14px 16px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.06);
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+      color: #eadcc7;
+    }
+
+    @media (max-width: 980px) {
+      .hero {
+        grid-template-columns: 1fr;
+      }
+
+      .player-card {
+        grid-template-columns: 1fr;
+        text-align: center;
+      }
+
+      .track-meta,
+      .time-row,
+      .volume-label {
+        text-align: left;
+      }
+    }
+
+    @media (max-width: 560px) {
+      h1 { font-size: 34px; }
+      .section-title { font-size: 24px; }
+      .page { padding: 18px 12px 34px; }
+      .hero { padding: 18px; border-radius: 24px; }
+      .controls { gap: 8px; }
+      .control-btn { min-width: calc(50% - 4px); }
+    }
+  </style>
+</head>
+<body>
+  <div class="sparkles">
+    <span class="sparkle"></span>
+    <span class="sparkle"></span>
+    <span class="sparkle"></span>
+    <span class="sparkle"></span>
+    <span class="sparkle"></span>
+    <span class="sparkle"></span>
+    <span class="sparkle"></span>
+    <span class="sparkle"></span>
+    <span class="sparkle"></span>
+  </div>
+
+  <div class="page">
+    <div class="back-row">
+      <a href="/" class="back-link">← Ana Sayfa</a>
+    </div>
+
+    <div class="hero">
+      <div class="left-col">
+        <div class="eyebrow">Magical Memories</div>
+        <h1>Büyülü Müzik Odası</h1>
+        <div class="subtitle">
+          Bu oda, hatıraları melodilere dönüştürmek için hazırlandı.
+          Şarkıları seç, sesi ayarla ve çerçevenin büyülü atmosferini tamamla.
+        </div>
+
+        <div class="player-card">
+          <div class="record-wrap" id="recordDisc"></div>
+
+          <div>
+            <div class="track-name" id="currentTrackName">Henüz şarkı seçilmedi</div>
+            <div class="track-meta" id="currentTrackMeta">Durum bekleniyor...</div>
+
+            <div class="progress-wrap">
+              <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+              </div>
+              <div class="time-row">
+                <span id="timeCurrent">0:00</span>
+                <span id="timeTotal">0:00</span>
+              </div>
+            </div>
+
+            <div class="controls">
+              <button class="control-btn secondary" id="prevBtn">Önceki</button>
+              <button class="control-btn" id="playBtn">Oynat</button>
+              <button class="control-btn secondary" id="pauseBtn">Duraklat</button>
+              <button class="control-btn secondary" id="nextBtn">Sonraki</button>
+            </div>
+
+            <div class="volume-wrap">
+              <div class="volume-label">Ses</div>
+              <div class="volume-row">
+                <input type="range" id="volumeSlider" min="0" max="100" step="1" value="70">
+                <span id="volumeValue">70</span>
+              </div>
+            </div>
+
+            <div class="status-box" id="statusBox">
+              Sunucudan durum bekleniyor...
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="right-col">
+        <div class="playlist-card">
+          <h2 class="section-title">Çalma Listesi</h2>
+          <div class="playlist-list" id="playlistList"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const playlistList = document.getElementById("playlistList");
+    const currentTrackName = document.getElementById("currentTrackName");
+    const currentTrackMeta = document.getElementById("currentTrackMeta");
+    const statusBox = document.getElementById("statusBox");
+    const progressFill = document.getElementById("progressFill");
+    const timeCurrent = document.getElementById("timeCurrent");
+    const timeTotal = document.getElementById("timeTotal");
+    const volumeSlider = document.getElementById("volumeSlider");
+    const volumeValue = document.getElementById("volumeValue");
+    const recordDisc = document.getElementById("recordDisc");
+
+    function formatTime(seconds) {
+      const s = Number(seconds || 0);
+      if (!Number.isFinite(s) || s < 0) return "0:00";
+      const mins = Math.floor(s / 60);
+      const secs = Math.floor(s % 60);
+      return `${mins}:${String(secs).padStart(2, "0")}`;
+    }
+
+    async function apiGet(path) {
+      const res = await fetch(path);
+      return res.json();
+    }
+
+    async function apiPost(path, body = null) {
+      const res = await fetch(path, {
+        method: "POST",
+        headers: body ? { "Content-Type": "application/json" } : undefined,
+        body: body ? JSON.stringify(body) : undefined
+      });
+      return res.json();
+    }
+
+    function renderPlaylist(data) {
+      const playlist = data.playlist || [];
+      const activeIndex = Number(data.current_index || 0);
+
+      playlistList.innerHTML = "";
+
+      if (!playlist.length) {
+        playlistList.innerHTML = '<div class="song-item"><div class="song-name">Henüz müzik yok</div></div>';
+        return;
+      }
+
+      playlist.forEach((name, index) => {
+        const item = document.createElement("div");
+        item.className = index === activeIndex ? "song-item active" : "song-item";
+
+        item.innerHTML = `
+          <div class="song-name">${name}</div>
+          <button class="song-action" data-index="${index}">Seç</button>
+        `;
+
+        playlistList.appendChild(item);
+      });
+
+      document.querySelectorAll(".song-action").forEach((btn) => {
+        btn.addEventListener("click", async () => {
+          const index = Number(btn.dataset.index);
+          await apiPost("/api/music/select", { index });
+          await refreshStatus();
+        });
+      });
+    }
+
+    function renderStatus(data) {
+      const player = data.player || {};
+      const currentName = data.current_name || player.filename || "Henüz şarkı seçilmedi";
+      const pause = !!player.pause;
+      const running = !!player.running;
+      const volume = Math.round(Number(player.volume || 70));
+      const duration = Number(player.duration || 0);
+      const timePos = Number(player.time_pos || 0);
+
+      currentTrackName.textContent = currentName;
+      currentTrackMeta.textContent = running
+        ? (pause ? "Durum: Duraklatıldı" : "Durum: Çalıyor")
+        : "Durum: Hazır";
+
+      const percent = duration > 0 ? Math.min(100, (timePos / duration) * 100) : 0;
+      progressFill.style.width = `${percent}%`;
+      timeCurrent.textContent = formatTime(timePos);
+      timeTotal.textContent = formatTime(duration);
+
+      volumeSlider.value = volume;
+      volumeValue.textContent = volume;
+
+      statusBox.textContent = running
+        ? (pause ? "Müzik duraklatıldı." : "Büyülü kayıt şu anda çalıyor.")
+        : "Oynatmaya hazır.";
+
+      if (running && !pause) {
+        recordDisc.classList.add("spinning");
+      } else {
+        recordDisc.classList.remove("spinning");
+      }
+    }
+
+    async function refreshStatus() {
+      const data = await apiGet("/api/music/status");
+      if (!data.ok) {
+        statusBox.textContent = data.error || "Müzik durumu alınamadı.";
+        return;
+      }
+      renderPlaylist(data);
+      renderStatus(data);
+    }
+
+    document.getElementById("playBtn").addEventListener("click", async () => {
+      await apiPost("/api/music/play");
+      await refreshStatus();
+    });
+
+    document.getElementById("pauseBtn").addEventListener("click", async () => {
+      await apiPost("/api/music/pause");
+      await refreshStatus();
+    });
+
+    document.getElementById("nextBtn").addEventListener("click", async () => {
+      await apiPost("/api/music/next");
+      await refreshStatus();
+    });
+
+    document.getElementById("prevBtn").addEventListener("click", async () => {
+      await apiPost("/api/music/prev");
+      await refreshStatus();
+    });
+
+    volumeSlider.addEventListener("input", () => {
+      volumeValue.textContent = volumeSlider.value;
+    });
+
+    volumeSlider.addEventListener("change", async () => {
+      await apiPost("/api/music/volume", { volume: Number(volumeSlider.value) });
+      await refreshStatus();
+    });
+
+    refreshStatus();
+    setInterval(refreshStatus, 4000);
+  </script>
+</body>
+</html>
