@@ -6,7 +6,6 @@
   <title>Büyülü Müzik Odası</title>
   <style>
     * { box-sizing: border-box; }
-
     body {
       margin: 0;
       font-family: Georgia, "Times New Roman", serif;
@@ -19,52 +18,13 @@
       overflow-x: hidden;
     }
 
-    .sparkles {
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      overflow: hidden;
-      z-index: 0;
-    }
-
-    .sparkle {
-      position: absolute;
-      width: 4px;
-      height: 4px;
-      border-radius: 50%;
-      background: rgba(255, 223, 158, 0.95);
-      box-shadow: 0 0 12px rgba(255, 199, 92, 0.58);
-      animation: sparkleFloat linear infinite;
-    }
-
-    .sparkle:nth-child(1)  { left: 8%; top: 90%; animation-duration: 13s; animation-delay: 0s; }
-    .sparkle:nth-child(2)  { left: 18%; top: 97%; animation-duration: 17s; animation-delay: 2s; }
-    .sparkle:nth-child(3)  { left: 30%; top: 93%; animation-duration: 15s; animation-delay: 4s; }
-    .sparkle:nth-child(4)  { left: 41%; top: 95%; animation-duration: 18s; animation-delay: 1s; }
-    .sparkle:nth-child(5)  { left: 52%; top: 91%; animation-duration: 14s; animation-delay: 5s; }
-    .sparkle:nth-child(6)  { left: 63%; top: 97%; animation-duration: 19s; animation-delay: 3s; }
-    .sparkle:nth-child(7)  { left: 74%; top: 94%; animation-duration: 16s; animation-delay: 6s; }
-    .sparkle:nth-child(8)  { left: 84%; top: 96%; animation-duration: 12s; animation-delay: 2.5s; }
-    .sparkle:nth-child(9)  { left: 92%; top: 92%; animation-duration: 20s; animation-delay: 4.5s; }
-
-    @keyframes sparkleFloat {
-      0% { transform: translateY(0) scale(0.8); opacity: 0; }
-      12% { opacity: 0.6; }
-      50% { opacity: 0.95; }
-      100% { transform: translateY(-120vh) scale(1.2); opacity: 0; }
-    }
-
     .page {
-      position: relative;
-      z-index: 1;
       max-width: 1280px;
       margin: 0 auto;
       padding: 28px 18px 42px;
     }
 
-    .back-row {
-      margin-bottom: 18px;
-    }
+    .back-row { margin-bottom: 18px; }
 
     .back-link {
       display: inline-block;
@@ -89,11 +49,6 @@
       padding: 28px;
       box-shadow: 0 24px 80px rgba(0,0,0,0.42), inset 0 1px 0 rgba(255,236,186,0.03);
       backdrop-filter: blur(8px);
-      overflow: hidden;
-    }
-
-    .left-col, .right-col {
-      min-width: 0;
     }
 
     .eyebrow {
@@ -143,45 +98,21 @@
       border-radius: 50%;
       background:
         radial-gradient(circle at center, #3d2b1a 0 18px, #8e6833 18px 24px, #21160f 24px 100%);
-      box-shadow:
-        inset 0 0 0 1px rgba(255,222,166,0.08),
-        0 12px 24px rgba(0,0,0,0.28);
+      box-shadow: inset 0 0 0 1px rgba(255,222,166,0.08), 0 12px 24px rgba(0,0,0,0.28);
       margin: 0 auto;
     }
 
-    .record-wrap::before {
-      content: "";
-      position: absolute;
-      inset: 12px;
-      border-radius: 50%;
-      border: 1px solid rgba(255,223,165,0.08);
-    }
+    .record-wrap.spinning { animation: spin 5s linear infinite; }
 
-    .record-wrap.spinning {
-      animation: spin 5s linear infinite;
-    }
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-    @keyframes spin {
-      from { transform: rotate(0deg); }
-      to { transform: rotate(360deg); }
-    }
-
-    .track-name {
-      font-size: 28px;
-      color: #fff0d2;
-      margin-bottom: 10px;
-      word-break: break-word;
-    }
+    .track-name { font-size: 28px; color: #fff0d2; margin-bottom: 10px; word-break: break-word; }
 
     .track-meta {
       font-family: Arial, sans-serif;
       color: #d2c1a4;
       font-size: 14px;
       line-height: 1.7;
-      margin-bottom: 18px;
-    }
-
-    .progress-wrap {
       margin-bottom: 18px;
     }
 
@@ -200,7 +131,6 @@
       background: linear-gradient(90deg, #9a712f, #e0bf7a);
       border-radius: 999px;
       transition: width 0.5s ease;
-      box-shadow: 0 0 14px rgba(224,191,122,0.22);
     }
 
     .time-row {
@@ -216,7 +146,7 @@
       display: flex;
       gap: 10px;
       flex-wrap: wrap;
-      margin-bottom: 16px;
+      margin: 18px 0 16px;
     }
 
     .control-btn {
@@ -228,39 +158,20 @@
       padding: 12px 14px;
       border-radius: 14px;
       min-width: 100px;
-      box-shadow: 0 12px 22px rgba(111, 77, 31, 0.22);
     }
 
-    .control-btn.secondary {
-      background: linear-gradient(135deg, #5f4b2f, #473521);
-    }
-
-    .volume-wrap {
-      margin-top: 8px;
-    }
-
-    .volume-label {
-      font-family: Arial, sans-serif;
-      font-size: 14px;
-      color: #e0d2b9;
-      margin-bottom: 8px;
-    }
+    .control-btn.secondary { background: linear-gradient(135deg, #5f4b2f, #473521); }
 
     .volume-row {
       display: flex;
       gap: 12px;
       align-items: center;
+      font-family: Arial, sans-serif;
     }
 
-    input[type="range"] {
-      width: 100%;
-    }
+    input[type="range"] { width: 100%; }
 
-    .section-title {
-      margin: 0 0 14px 0;
-      font-size: 28px;
-      color: #fff0d2;
-    }
+    .section-title { margin: 0 0 14px 0; font-size: 28px; color: #fff0d2; }
 
     .playlist-list {
       display: flex;
@@ -268,7 +179,6 @@
       gap: 12px;
       max-height: 540px;
       overflow: auto;
-      padding-right: 4px;
     }
 
     .song-item {
@@ -276,11 +186,10 @@
       grid-template-columns: 1fr auto;
       gap: 12px;
       align-items: center;
-      padding: 14px 14px;
+      padding: 14px;
       border-radius: 16px;
       background: rgba(255,255,255,0.04);
       border: 1px solid rgba(255,255,255,0.06);
-      transition: 0.18s ease;
     }
 
     .song-item.active {
@@ -319,20 +228,8 @@
     }
 
     @media (max-width: 980px) {
-      .hero {
-        grid-template-columns: 1fr;
-      }
-
-      .player-card {
-        grid-template-columns: 1fr;
-        text-align: center;
-      }
-
-      .track-meta,
-      .time-row,
-      .volume-label {
-        text-align: left;
-      }
+      .hero { grid-template-columns: 1fr; }
+      .player-card { grid-template-columns: 1fr; text-align: center; }
     }
 
     @media (max-width: 560px) {
@@ -340,36 +237,22 @@
       .section-title { font-size: 24px; }
       .page { padding: 18px 12px 34px; }
       .hero { padding: 18px; border-radius: 24px; }
-      .controls { gap: 8px; }
       .control-btn { min-width: calc(50% - 4px); }
     }
   </style>
 </head>
 <body>
-  <div class="sparkles">
-    <span class="sparkle"></span>
-    <span class="sparkle"></span>
-    <span class="sparkle"></span>
-    <span class="sparkle"></span>
-    <span class="sparkle"></span>
-    <span class="sparkle"></span>
-    <span class="sparkle"></span>
-    <span class="sparkle"></span>
-    <span class="sparkle"></span>
-  </div>
-
   <div class="page">
     <div class="back-row">
       <a href="/" class="back-link">← Ana Sayfa</a>
     </div>
 
     <div class="hero">
-      <div class="left-col">
+      <div>
         <div class="eyebrow">Magical Memories</div>
         <h1>Büyülü Müzik Odası</h1>
         <div class="subtitle">
-          Bu oda, hatıraları melodilere dönüştürmek için hazırlandı.
-          Şarkıları seç, sesi ayarla ve çerçevenin büyülü atmosferini tamamla.
+          Hatıraları melodilere dönüştürmek için hazırlandı.
         </div>
 
         <div class="player-card">
@@ -379,14 +262,12 @@
             <div class="track-name" id="currentTrackName">Henüz şarkı seçilmedi</div>
             <div class="track-meta" id="currentTrackMeta">Durum bekleniyor...</div>
 
-            <div class="progress-wrap">
-              <div class="progress-bar">
-                <div class="progress-fill" id="progressFill"></div>
-              </div>
-              <div class="time-row">
-                <span id="timeCurrent">0:00</span>
-                <span id="timeTotal">0:00</span>
-              </div>
+            <div class="progress-bar">
+              <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="time-row">
+              <span id="timeCurrent">0:00</span>
+              <span id="timeTotal">0:00</span>
             </div>
 
             <div class="controls">
@@ -396,22 +277,17 @@
               <button class="control-btn secondary" id="nextBtn">Sonraki</button>
             </div>
 
-            <div class="volume-wrap">
-              <div class="volume-label">Ses</div>
-              <div class="volume-row">
-                <input type="range" id="volumeSlider" min="0" max="100" step="1" value="70">
-                <span id="volumeValue">70</span>
-              </div>
+            <div class="volume-row">
+              <input type="range" id="volumeSlider" min="0" max="100" step="1" value="70">
+              <span id="volumeValue">70</span>
             </div>
 
-            <div class="status-box" id="statusBox">
-              Sunucudan durum bekleniyor...
-            </div>
+            <div class="status-box" id="statusBox">Sunucudan durum bekleniyor...</div>
           </div>
         </div>
       </div>
 
-      <div class="right-col">
+      <div>
         <div class="playlist-card">
           <h2 class="section-title">Çalma Listesi</h2>
           <div class="playlist-list" id="playlistList"></div>
@@ -440,126 +316,94 @@
       return `${mins}:${String(secs).padStart(2, "0")}`;
     }
 
-    async function apiGet(path) {
-      const res = await fetch(path);
-      return res.json();
-    }
+    async function loadState() {
+      const res = await fetch("/api/music/state");
+      const data = await res.json();
 
-    async function apiPost(path, body = null) {
-      const res = await fetch(path, {
-        method: "POST",
-        headers: body ? { "Content-Type": "application/json" } : undefined,
-        body: body ? JSON.stringify(body) : undefined
-      });
-      return res.json();
-    }
+      if (!data.ok) {
+        statusBox.textContent = data.error || "Durum alınamadı.";
+        return;
+      }
 
-    function renderPlaylist(data) {
       const playlist = data.playlist || [];
-      const activeIndex = Number(data.current_index || 0);
+      const state = data.state || {};
+      const activeIndex = Number(state.current_index || 0);
 
       playlistList.innerHTML = "";
 
       if (!playlist.length) {
         playlistList.innerHTML = '<div class="song-item"><div class="song-name">Henüz müzik yok</div></div>';
-        return;
+      } else {
+        playlist.forEach((name, index) => {
+          const item = document.createElement("div");
+          item.className = index === activeIndex ? "song-item active" : "song-item";
+          item.innerHTML = `
+            <div class="song-name">${name}</div>
+            <button class="song-action" data-index="${index}">Seç</button>
+          `;
+          playlistList.appendChild(item);
+        });
+
+        document.querySelectorAll(".song-action").forEach((btn) => {
+          btn.addEventListener("click", async () => {
+            const index = Number(btn.dataset.index);
+            await sendCommand("select", { index });
+          });
+        });
       }
 
-      playlist.forEach((name, index) => {
-        const item = document.createElement("div");
-        item.className = index === activeIndex ? "song-item active" : "song-item";
-
-        item.innerHTML = `
-          <div class="song-name">${name}</div>
-          <button class="song-action" data-index="${index}">Seç</button>
-        `;
-
-        playlistList.appendChild(item);
-      });
-
-      document.querySelectorAll(".song-action").forEach((btn) => {
-        btn.addEventListener("click", async () => {
-          const index = Number(btn.dataset.index);
-          await apiPost("/api/music/select", { index });
-          await refreshStatus();
-        });
-      });
-    }
-
-    function renderStatus(data) {
-      const player = data.player || {};
-      const currentName = data.current_name || player.filename || "Henüz şarkı seçilmedi";
-      const pause = !!player.pause;
-      const running = !!player.running;
-      const volume = Math.round(Number(player.volume || 70));
-      const duration = Number(player.duration || 0);
-      const timePos = Number(player.time_pos || 0);
-
-      currentTrackName.textContent = currentName;
-      currentTrackMeta.textContent = running
-        ? (pause ? "Durum: Duraklatıldı" : "Durum: Çalıyor")
+      currentTrackName.textContent = state.current_name || "Henüz şarkı seçilmedi";
+      currentTrackMeta.textContent = state.running
+        ? (state.pause ? "Durum: Duraklatıldı" : "Durum: Çalıyor")
         : "Durum: Hazır";
 
+      const duration = Number(state.duration || 0);
+      const timePos = Number(state.time_pos || 0);
       const percent = duration > 0 ? Math.min(100, (timePos / duration) * 100) : 0;
+
       progressFill.style.width = `${percent}%`;
       timeCurrent.textContent = formatTime(timePos);
       timeTotal.textContent = formatTime(duration);
 
-      volumeSlider.value = volume;
-      volumeValue.textContent = volume;
+      const vol = Math.round(Number(state.volume || 70));
+      volumeSlider.value = vol;
+      volumeValue.textContent = vol;
 
-      statusBox.textContent = running
-        ? (pause ? "Müzik duraklatıldı." : "Büyülü kayıt şu anda çalıyor.")
+      statusBox.textContent = state.running
+        ? (state.pause ? "Müzik duraklatıldı." : "Büyülü kayıt şu anda çalıyor.")
         : "Oynatmaya hazır.";
 
-      if (running && !pause) {
+      if (state.running && !state.pause) {
         recordDisc.classList.add("spinning");
       } else {
         recordDisc.classList.remove("spinning");
       }
     }
 
-    async function refreshStatus() {
-      const data = await apiGet("/api/music/status");
-      if (!data.ok) {
-        statusBox.textContent = data.error || "Müzik durumu alınamadı.";
-        return;
-      }
-      renderPlaylist(data);
-      renderStatus(data);
+    async function sendCommand(command, payload = {}) {
+      await fetch("/api/music/command", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ command, payload })
+      });
+      setTimeout(loadState, 700);
     }
 
-    document.getElementById("playBtn").addEventListener("click", async () => {
-      await apiPost("/api/music/play");
-      await refreshStatus();
-    });
-
-    document.getElementById("pauseBtn").addEventListener("click", async () => {
-      await apiPost("/api/music/pause");
-      await refreshStatus();
-    });
-
-    document.getElementById("nextBtn").addEventListener("click", async () => {
-      await apiPost("/api/music/next");
-      await refreshStatus();
-    });
-
-    document.getElementById("prevBtn").addEventListener("click", async () => {
-      await apiPost("/api/music/prev");
-      await refreshStatus();
-    });
+    document.getElementById("playBtn").addEventListener("click", () => sendCommand("play"));
+    document.getElementById("pauseBtn").addEventListener("click", () => sendCommand("pause"));
+    document.getElementById("nextBtn").addEventListener("click", () => sendCommand("next"));
+    document.getElementById("prevBtn").addEventListener("click", () => sendCommand("prev"));
 
     volumeSlider.addEventListener("input", () => {
       volumeValue.textContent = volumeSlider.value;
     });
 
-    volumeSlider.addEventListener("change", async () => {
-      await apiPost("/api/music/volume", { volume: Number(volumeSlider.value) });
-      await refreshStatus();
+    volumeSlider.addEventListener("change", () => {
+      sendCommand("volume", { volume: Number(volumeSlider.value) });
     });
 
-    refreshStatus();
-    setInterval(refreshStatus, 4000);
+    loadState();
+    setInterval(loadState, 3000);
   </script>
 </body>
 </html>
