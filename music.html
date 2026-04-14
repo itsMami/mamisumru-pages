@@ -12,6 +12,7 @@
       --bg-2: #14171d;
       --bg-3: #1a1410;
       --gold: #d9b36c;
+      --gold-2: #a67a33;
       --text: #f4ead7;
       --muted: #d3c2a7;
       --muted-2: #bca887;
@@ -118,7 +119,7 @@
       display: flex;
       flex-direction: column;
       gap: 10px;
-      max-height: calc(100vh - 200px);;
+      max-height: calc(100vh - 470px);
       overflow: auto;
       padding-right: 4px;
     }
@@ -165,6 +166,7 @@
       cursor: pointer;
       font-weight: 700;
       font-size: 18px;
+      transition: 0.18s ease;
     }
 
     .bottom-player {
@@ -186,7 +188,7 @@
       backdrop-filter: blur(16px);
       overflow: hidden;
     }
-    
+
     .bottom-player::before {
       content: "";
       position: absolute;
@@ -201,7 +203,7 @@
           rgba(255,255,255,0) 40%
         );
     }
-    
+
     .bottom-player::after {
       content: "";
       position: absolute;
@@ -232,12 +234,12 @@
       z-index: 1;
       padding: 14px 18px 14px;
     }
-    
+
     .mini-track {
       text-align: center;
       margin-bottom: 10px;
     }
-    
+
     .mini-track-title {
       font-size: 18px;
       color: #fff0d2;
@@ -246,7 +248,7 @@
       overflow: hidden;
       text-overflow: ellipsis;
     }
-    
+
     .mini-track-meta {
       font-family: Arial, sans-serif;
       font-size: 12px;
@@ -255,7 +257,7 @@
       overflow: hidden;
       text-overflow: ellipsis;
     }
-    
+
     .center-controls {
       display: flex;
       align-items: center;
@@ -282,20 +284,13 @@
       background: linear-gradient(135deg, #5f4b2f, #473521);
     }
 
-    .control-btn:hover,
-    .song-action:hover,
-    .volume-step-btn:hover {
-      transform: translateY(-1px) scale(1.02);
-      filter: brightness(1.06);
-    }
-
     .icon-btn {
       width: 52px;
       height: 52px;
       font-size: 22px;
       line-height: 1;
     }
-    
+
     .play-main-btn {
       width: 64px;
       height: 64px;
@@ -306,6 +301,13 @@
         0 14px 28px rgba(111, 77, 31, 0.34),
         0 0 18px rgba(214, 177, 92, 0.16),
         inset 0 1px 0 rgba(255, 232, 186, 0.14);
+    }
+
+    .control-btn:hover,
+    .song-action:hover,
+    .volume-step-btn:hover {
+      transform: translateY(-1px) scale(1.02);
+      filter: brightness(1.06);
     }
 
     .progress-wrap {
@@ -321,7 +323,7 @@
       overflow: hidden;
       border: 1px solid rgba(255,255,255,0.06);
     }
-    
+
     .progress-fill {
       position: relative;
       width: 0%;
@@ -331,7 +333,7 @@
       transition: width 0.5s ease;
       box-shadow: 0 0 14px rgba(224,191,122,0.22);
     }
-    
+
     .progress-fill::after {
       content: "";
       position: absolute;
@@ -348,10 +350,24 @@
       transform: skewX(-20deg);
       opacity: 0;
     }
-    
+
     .progress-fill.shimmering::after {
       animation: progressShimmer 2.2s linear infinite;
       opacity: 1;
+    }
+
+    @keyframes progressShimmer {
+      0% {
+        transform: translateX(-36px) skewX(-20deg);
+        opacity: 0.2;
+      }
+      50% {
+        opacity: 0.9;
+      }
+      100% {
+        transform: translateX(120px) skewX(-20deg);
+        opacity: 0.2;
+      }
     }
 
     .time-row {
@@ -369,7 +385,7 @@
       background: rgba(255,255,255,0.04);
       border: 1px solid rgba(255,255,255,0.06);
     }
-    
+
     .volume-top {
       display: flex;
       align-items: center;
@@ -413,25 +429,11 @@
       color: #fff4e3;
       font-size: 20px;
       cursor: pointer;
+      transition: 0.18s ease;
     }
 
     input[type="range"] {
       width: 100%;
-    }
-
-
-    @keyframes progressShimmer {
-      0% {
-        transform: translateX(-36px) skewX(-20deg);
-        opacity: 0.2;
-      }
-      50% {
-        opacity: 0.9;
-      }
-      100% {
-        transform: translateX(120px) skewX(-20deg);
-        opacity: 0.2;
-      }
     }
 
     @media (max-width: 560px) {
@@ -451,19 +453,8 @@
         font-size: 24px;
       }
 
-      .icon-btn {
-        width: 52px;
-        height: 52px;
-      }
-
-      .play-main-btn {
-        width: 64px;
-        height: 64px;
-      }
-
       .bottom-player {
-        left: 10px;
-        right: 10px;
+        width: calc(100vw - 20px);
         bottom: 10px;
       }
 
@@ -599,13 +590,14 @@
       const percent = duration > 0 ? Math.min(100, (timePos / duration) * 100) : 0;
 
       progressFill.style.width = `${percent}%`;
+      timeCurrent.textContent = formatTime(timePos);
+      timeTotal.textContent = formatTime(duration);
+
       if (state.running && !state.pause && percent > 0) {
         progressFill.classList.add("shimmering");
       } else {
         progressFill.classList.remove("shimmering");
       }
-      timeCurrent.textContent = formatTime(timePos);
-      timeTotal.textContent = formatTime(duration);
 
       const vol = Math.round(Number(state.volume || 70));
       volumeSlider.value = vol;
