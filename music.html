@@ -6,28 +6,51 @@
   <title>Büyülü Müzik Odası</title>
   <style>
     * { box-sizing: border-box; }
+
+    :root {
+      --bg-1: #0b0d12;
+      --bg-2: #14171d;
+      --bg-3: #1a1410;
+      --panel: rgba(25, 22, 20, 0.82);
+      --panel-soft: rgba(255,255,255,0.04);
+      --border: rgba(255,255,255,0.08);
+      --gold: #d9b36c;
+      --gold-2: #a67a33;
+      --text: #f4ead7;
+      --muted: #d3c2a7;
+      --muted-2: #bca887;
+      --shadow: rgba(0,0,0,0.35);
+    }
+
     body {
       margin: 0;
       font-family: Georgia, "Times New Roman", serif;
-      color: #f4ead7;
+      color: var(--text);
       background:
         radial-gradient(circle at top left, rgba(211, 156, 65, 0.12), transparent 24%),
         radial-gradient(circle at bottom right, rgba(119, 51, 34, 0.16), transparent 24%),
-        linear-gradient(135deg, #0a0c10 0%, #13161d 38%, #1b1512 100%);
+        linear-gradient(135deg, var(--bg-1) 0%, var(--bg-2) 38%, var(--bg-3) 100%);
       min-height: 100vh;
       overflow-x: hidden;
     }
 
     .page {
-      max-width: 1280px;
+      max-width: 1200px;
       margin: 0 auto;
-      padding: 28px 18px 42px;
+      padding: 24px 18px 130px;
     }
 
-    .back-row { margin-bottom: 18px; }
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
 
     .back-link {
-      display: inline-block;
+      display: inline-flex;
+      align-items: center;
       text-decoration: none;
       color: #f9eed7;
       background: rgba(255,255,255,0.07);
@@ -36,18 +59,17 @@
       border-radius: 999px;
       box-shadow: 0 8px 18px rgba(0,0,0,0.18);
       font-weight: 700;
+      font-family: Arial, sans-serif;
     }
 
     .hero {
-      display: grid;
-      grid-template-columns: 1.05fr 0.95fr;
-      gap: 26px;
-      align-items: stretch;
       background: linear-gradient(180deg, rgba(38, 29, 22, 0.78), rgba(18, 20, 27, 0.72));
       border: 1px solid rgba(209, 167, 90, 0.14);
-      border-radius: 30px;
-      padding: 28px;
-      box-shadow: 0 24px 80px rgba(0,0,0,0.42), inset 0 1px 0 rgba(255,236,186,0.03);
+      border-radius: 28px;
+      padding: 24px;
+      box-shadow:
+        0 24px 80px rgba(0,0,0,0.42),
+        inset 0 1px 0 rgba(255,236,186,0.03);
       backdrop-filter: blur(8px);
     }
 
@@ -55,70 +77,276 @@
       font-size: 12px;
       letter-spacing: 0.22em;
       text-transform: uppercase;
-      color: #d9b36c;
-      margin-bottom: 14px;
+      color: var(--gold);
+      margin-bottom: 12px;
     }
 
     h1 {
-      margin: 0 0 12px 0;
-      font-size: 48px;
+      margin: 0 0 8px 0;
+      font-size: 44px;
       line-height: 1.05;
       color: #fff0d2;
     }
 
     .subtitle {
       font-family: Arial, sans-serif;
-      font-size: 16px;
+      font-size: 15px;
       line-height: 1.8;
       color: #ddcfb7;
-      max-width: 580px;
-      margin-bottom: 20px;
+      max-width: 700px;
+      margin-bottom: 18px;
     }
 
-    .player-card,
-    .playlist-card {
+    .now-playing-card {
+      display: grid;
+      grid-template-columns: 96px 1fr;
+      gap: 16px;
+      align-items: center;
+      padding: 18px;
+      border-radius: 22px;
       background: linear-gradient(180deg, rgba(255,244,216,0.04), rgba(255,244,216,0.02));
       border: 1px solid rgba(214, 177, 92, 0.10);
-      border-radius: 22px;
-      padding: 20px;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
-    }
-
-    .player-card {
-      display: grid;
-      grid-template-columns: 140px 1fr;
-      gap: 20px;
-      align-items: center;
+      margin-bottom: 20px;
     }
 
     .record-wrap {
       position: relative;
-      width: 140px;
-      height: 140px;
+      width: 96px;
+      height: 96px;
       border-radius: 50%;
       background:
-        radial-gradient(circle at center, #3d2b1a 0 18px, #8e6833 18px 24px, #21160f 24px 100%);
-      box-shadow: inset 0 0 0 1px rgba(255,222,166,0.08), 0 12px 24px rgba(0,0,0,0.28);
+        radial-gradient(circle at center, #3d2b1a 0 12px, #8e6833 12px 18px, #21160f 18px 100%);
+      box-shadow:
+        inset 0 0 0 1px rgba(255,222,166,0.08),
+        0 10px 20px rgba(0,0,0,0.28);
       margin: 0 auto;
     }
 
-    .record-wrap.spinning { animation: spin 5s linear infinite; }
+    .record-wrap.spinning {
+      animation: spin 5s linear infinite;
+    }
 
-    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
 
-    .track-name { font-size: 28px; color: #fff0d2; margin-bottom: 10px; word-break: break-word; }
+    .current-track-label {
+      font-family: Arial, sans-serif;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--gold);
+      margin-bottom: 8px;
+    }
+
+    .track-name {
+      font-size: 28px;
+      color: #fff0d2;
+      margin-bottom: 8px;
+      word-break: break-word;
+    }
 
     .track-meta {
       font-family: Arial, sans-serif;
-      color: #d2c1a4;
+      color: var(--muted);
       font-size: 14px;
       line-height: 1.7;
-      margin-bottom: 18px;
+      margin-bottom: 12px;
+    }
+
+    .status-box {
+      padding: 12px 14px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.06);
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+      color: #eadcc7;
+      font-size: 14px;
+    }
+
+    .playlist-panel {
+      margin-top: 18px;
+      padding: 20px;
+      border-radius: 22px;
+      background: linear-gradient(180deg, rgba(255,244,216,0.04), rgba(255,244,216,0.02));
+      border: 1px solid rgba(214, 177, 92, 0.10);
+    }
+
+    .playlist-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .section-title {
+      margin: 0;
+      font-size: 28px;
+      color: #fff0d2;
+    }
+
+    .playlist-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-height: 52vh;
+      overflow: auto;
+      padding-right: 4px;
+    }
+
+    .song-item {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: center;
+      padding: 14px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.06);
+      transition: 0.18s ease;
+    }
+
+    .song-item.active {
+      border-color: rgba(214, 177, 92, 0.34);
+      box-shadow: 0 0 0 2px rgba(214, 177, 92, 0.08);
+      background: rgba(214, 177, 92, 0.06);
+    }
+
+    .song-item:hover {
+      transform: translateY(-1px);
+      background: rgba(255,255,255,0.06);
+    }
+
+    .song-name {
+      font-family: Arial, sans-serif;
+      font-size: 15px;
+      line-height: 1.5;
+      color: #f4e8d8;
+      word-break: break-word;
+    }
+
+    .song-action {
+      min-width: 48px;
+      height: 44px;
+      padding: 0 14px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.08);
+      color: #fff4e3;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 18px;
+    }
+
+    .bottom-player {
+      position: fixed;
+      left: 14px;
+      right: 14px;
+      bottom: 14px;
+      z-index: 20;
+      max-width: 1280px;
+      margin: 0 auto;
+      background: linear-gradient(180deg, rgba(27, 24, 22, 0.96), rgba(20, 18, 18, 0.96));
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 24px;
+      box-shadow:
+        0 18px 40px rgba(0,0,0,0.42),
+        inset 0 1px 0 rgba(255,255,255,0.03);
+      backdrop-filter: blur(12px);
+      overflow: hidden;
+    }
+
+    .bottom-player-inner {
+      display: grid;
+      grid-template-columns: 1.1fr auto 1fr;
+      align-items: center;
+      gap: 18px;
+      padding: 16px 20px;
+    }
+
+    .mini-track {
+      min-width: 0;
+    }
+
+    .mini-track-title {
+      font-size: 18px;
+      color: #fff0d2;
+      margin-bottom: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .mini-track-meta {
+      font-family: Arial, sans-serif;
+      font-size: 13px;
+      color: var(--muted-2);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .center-controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      justify-content: center;
+    }
+
+    .control-btn {
+      border: 1px solid rgba(255, 220, 164, 0.10);
+      background: linear-gradient(135deg, #8f6a2d, #6e4c1e);
+      color: #fff7eb;
+      font-weight: 700;
+      cursor: pointer;
+      padding: 0;
+      border-radius: 18px;
+      display: grid;
+      place-items: center;
+      box-shadow: 0 12px 24px rgba(0,0,0,0.24);
+      transition: 0.18s ease;
+    }
+
+    .control-btn:hover,
+    .song-action:hover,
+    .volume-step-btn:hover {
+      transform: translateY(-1px) scale(1.02);
+      filter: brightness(1.06);
+    }
+
+    .control-btn.secondary {
+      background: linear-gradient(135deg, #5f4b2f, #473521);
+    }
+
+    .icon-btn {
+      width: 58px;
+      height: 58px;
+      font-size: 24px;
+      line-height: 1;
+    }
+
+    .play-main-btn {
+      width: 72px;
+      height: 72px;
+      font-size: 30px;
+      border-radius: 22px;
+      background: linear-gradient(135deg, #a67a33, #75511f);
+    }
+
+    .right-tools {
+      min-width: 0;
+    }
+
+    .progress-wrap {
+      margin-bottom: 12px;
     }
 
     .progress-bar {
       width: 100%;
-      height: 12px;
+      height: 10px;
       border-radius: 999px;
       background: rgba(255,255,255,0.08);
       overflow: hidden;
@@ -131,6 +359,7 @@
       background: linear-gradient(90deg, #9a712f, #e0bf7a);
       border-radius: 999px;
       transition: width 0.5s ease;
+      box-shadow: 0 0 14px rgba(224,191,122,0.22);
     }
 
     .time-row {
@@ -138,62 +367,13 @@
       justify-content: space-between;
       margin-top: 8px;
       font-family: Arial, sans-serif;
-      font-size: 13px;
+      font-size: 12px;
       color: #cdbb9c;
     }
 
-    .controls {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-      margin: 18px 0 18px;
-      align-items: center;
-    }
-    .icon-btn {
-      min-width: 74px;
-      height: 62px;
-      padding: 0;
-      border-radius: 18px;
-      font-size: 26px;
-      display: grid;
-      place-items: center;
-      line-height: 1;
-      box-shadow:
-        0 12px 24px rgba(0,0,0,0.24),
-        inset 0 1px 0 rgba(255, 228, 173, 0.10);
-    }
-    .play-main-btn {
-      min-width: 92px;
-      height: 72px;
-      font-size: 32px;
-      border-radius: 22px;
-      background: linear-gradient(135deg, #a67a33, #75511f);
-      box-shadow:
-        0 16px 30px rgba(111, 77, 31, 0.30),
-        inset 0 1px 0 rgba(255, 228, 173, 0.14);
-    }
-    .icon-btn:hover {
-      transform: translateY(-1px) scale(1.02);
-      filter: brightness(1.06);
-    }
-
-    .control-btn {
-      border: 1px solid rgba(255, 220, 164, 0.10);
-      background: linear-gradient(135deg, #8f6a2d, #6e4c1e);
-      color: #fff7eb;
-      font-weight: 700;
-      cursor: pointer;
-      padding: 12px 14px;
-      border-radius: 14px;
-      min-width: 100px;
-    }
-
-    .control-btn.secondary { background: linear-gradient(135deg, #5f4b2f, #473521); }
-
     .volume-panel {
-      margin-top: 16px;
-      padding: 16px 16px 14px;
-      border-radius: 18px;
+      padding: 12px 14px;
+      border-radius: 16px;
       background: rgba(255,255,255,0.04);
       border: 1px solid rgba(255,255,255,0.06);
     }
@@ -201,184 +381,185 @@
     .volume-top {
       display: flex;
       align-items: center;
-      gap: 10px;
-      margin-bottom: 12px;
+      gap: 8px;
+      margin-bottom: 10px;
       font-family: Arial, sans-serif;
     }
-    
-    .volume-icon {
-      font-size: 18px;
-    }
-    
+
     .volume-title {
       color: #e6d7bf;
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 700;
     }
-    
+
     .volume-badge {
       margin-left: auto;
-      min-width: 46px;
+      min-width: 44px;
       text-align: center;
-      padding: 6px 10px;
+      padding: 5px 10px;
       border-radius: 999px;
       background: rgba(214, 177, 92, 0.12);
       border: 1px solid rgba(214, 177, 92, 0.18);
       color: #ffe8b8;
-      font-size: 13px;
+      font-size: 12px;
       font-weight: 700;
+      font-family: Arial, sans-serif;
     }
-    
+
     .volume-row {
       display: grid;
-      grid-template-columns: 48px 1fr 48px;
+      grid-template-columns: 42px 1fr 42px;
       gap: 10px;
       align-items: center;
     }
-    
+
     .volume-step-btn {
-      height: 44px;
-      border-radius: 14px;
-      border: 1px solid rgba(255,255,255,0.08);
-      background: rgba(255,255,255,0.08);
-      color: #fff4e3;
-      font-size: 24px;
-      cursor: pointer;
-    }
-
-
-
-
-
-    .section-title { margin: 0 0 14px 0; font-size: 28px; color: #fff0d2; }
-
-    .playlist-list {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      max-height: 540px;
-      overflow: auto;
-    }
-
-    .song-item {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 12px;
-      align-items: center;
-      padding: 14px;
-      border-radius: 16px;
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.06);
-    }
-
-    .song-item.active {
-      border-color: rgba(214, 177, 92, 0.34);
-      box-shadow: 0 0 0 2px rgba(214, 177, 92, 0.08);
-      background: rgba(214, 177, 92, 0.06);
-    }
-
-    .song-name {
-      font-family: Arial, sans-serif;
-      font-size: 15px;
-      line-height: 1.5;
-      color: #f4e8d8;
-      word-break: break-word;
-    }
-
-    .song-action {
-      padding: 10px 12px;
+      height: 40px;
       border-radius: 12px;
       border: 1px solid rgba(255,255,255,0.08);
       background: rgba(255,255,255,0.08);
       color: #fff4e3;
+      font-size: 20px;
       cursor: pointer;
-      font-weight: 700;
     }
 
-    .status-box {
-      margin-top: 14px;
-      padding: 14px 16px;
-      border-radius: 16px;
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(255,255,255,0.06);
-      font-family: Arial, sans-serif;
-      line-height: 1.6;
-      color: #eadcc7;
+    input[type="range"] {
+      width: 100%;
     }
 
     @media (max-width: 980px) {
-      .hero { grid-template-columns: 1fr; }
-      .player-card { grid-template-columns: 1fr; text-align: center; }
+      .now-playing-card {
+        grid-template-columns: 1fr;
+        text-align: center;
+      }
+
+      .bottom-player-inner {
+        grid-template-columns: 1fr;
+        gap: 14px;
+      }
+
+      .center-controls {
+        order: 2;
+      }
+
+      .right-tools {
+        order: 3;
+      }
+
+      .mini-track {
+        order: 1;
+      }
     }
 
     @media (max-width: 560px) {
-      h1 { font-size: 34px; }
-      .section-title { font-size: 24px; }
-      .page { padding: 18px 12px 34px; }
-      .hero { padding: 18px; border-radius: 24px; }
-      .control-btn { min-width: calc(50% - 4px); }
+      .page {
+        padding: 18px 12px 160px;
+      }
+
+      .hero {
+        padding: 18px;
+      }
+
+      h1 {
+        font-size: 34px;
+      }
+
+      .section-title {
+        font-size: 24px;
+      }
+
+      .icon-btn {
+        width: 52px;
+        height: 52px;
+      }
+
+      .play-main-btn {
+        width: 64px;
+        height: 64px;
+      }
+
+      .bottom-player {
+        left: 10px;
+        right: 10px;
+        bottom: 10px;
+      }
+
+      .bottom-player-inner {
+        padding: 14px;
+      }
     }
   </style>
 </head>
 <body>
   <div class="page">
-    <div class="back-row">
+    <div class="topbar">
       <a href="/" class="back-link">← Ana Sayfa</a>
     </div>
 
     <div class="hero">
-      <div>
-        <div class="eyebrow">Magical Memories</div>
-        <h1>Büyülü Müzik Odası</h1>
-        <div class="subtitle">
-          Hatıraları melodilere dönüştürmek için hazırlandı.
-        </div>
+      <div class="eyebrow">Magical Memories</div>
+      <h1>Büyülü Müzik Odası</h1>
+      <div class="subtitle">
+        Hatıraları melodilere dönüştürmek için hazırlandı.
+      </div>
 
-        <div class="player-card">
-          <div class="record-wrap" id="recordDisc"></div>
+      <div class="now-playing-card">
+        <div class="record-wrap" id="recordDisc"></div>
 
-          <div>
-            <div class="track-name" id="currentTrackName">Henüz şarkı seçilmedi</div>
-            <div class="track-meta" id="currentTrackMeta">Durum bekleniyor...</div>
-
-            <div class="progress-bar">
-              <div class="progress-fill" id="progressFill"></div>
-            </div>
-            <div class="time-row">
-              <span id="timeCurrent">0:00</span>
-              <span id="timeTotal">0:00</span>
-            </div>
-
-            <div class="controls">
-              <button class="control-btn secondary icon-btn" id="prevBtn" title="Önceki">⏮︎</button>
-              <button class="control-btn icon-btn play-main-btn" id="playBtn" title="Oynat">▶︎</button>
-              <button class="control-btn secondary icon-btn" id="pauseBtn" title="Duraklat">⏸︎</button>
-              <button class="control-btn secondary icon-btn" id="nextBtn" title="Sonraki">⏭︎</button>
-            </div>
-
-            <div class="volume-panel">
-              <div class="volume-top">
-                <span class="volume-icon">🔊</span>
-                <span class="volume-title">Ses Seviyesi</span>
-                <span id="volumeValue" class="volume-badge">70</span>
-              </div>
-            
-              <div class="volume-row">
-                <button class="volume-step-btn" id="volumeDownBtn" title="Sesi Azalt">−</button>
-                <input type="range" id="volumeSlider" min="0" max="100" step="1" value="100">
-                <button class="volume-step-btn" id="volumeUpBtn" title="Sesi Arttır">+</button>
-              </div>
-            </div>
-
-            <div class="status-box" id="statusBox">Sunucudan durum bekleniyor...</div>
-          </div>
+        <div>
+          <div class="current-track-label">Şimdi Çalan</div>
+          <div class="track-name" id="currentTrackName">Henüz şarkı seçilmedi</div>
+          <div class="track-meta" id="currentTrackMeta">Durum bekleniyor...</div>
+          <div class="status-box" id="statusBox">Sunucudan durum bekleniyor...</div>
         </div>
       </div>
 
-      <div>
-        <div class="playlist-card">
+      <div class="playlist-panel">
+        <div class="playlist-header">
           <h2 class="section-title">Çalma Listesi</h2>
-          <div class="playlist-list" id="playlistList"></div>
+        </div>
+        <div class="playlist-list" id="playlistList"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bottom-player">
+    <div class="bottom-player-inner">
+      <div class="mini-track">
+        <div class="mini-track-title" id="bottomTrackTitle">Henüz şarkı seçilmedi</div>
+        <div class="mini-track-meta" id="bottomTrackMeta">Hazır</div>
+      </div>
+
+      <div class="center-controls">
+        <button class="control-btn secondary icon-btn" id="prevBtn" title="Önceki">⏮</button>
+        <button class="control-btn icon-btn play-main-btn" id="playBtn" title="Oynat">▶</button>
+        <button class="control-btn secondary icon-btn" id="pauseBtn" title="Duraklat">⏸</button>
+        <button class="control-btn secondary icon-btn" id="nextBtn" title="Sonraki">⏭</button>
+      </div>
+
+      <div class="right-tools">
+        <div class="progress-wrap">
+          <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+          </div>
+          <div class="time-row">
+            <span id="timeCurrent">0:00</span>
+            <span id="timeTotal">0:00</span>
+          </div>
+        </div>
+
+        <div class="volume-panel">
+          <div class="volume-top">
+            <span>🔊</span>
+            <span class="volume-title">Ses Seviyesi</span>
+            <span id="volumeValue" class="volume-badge">70</span>
+          </div>
+
+          <div class="volume-row">
+            <button class="volume-step-btn" id="volumeDownBtn" title="Sesi Azalt">−</button>
+            <input type="range" id="volumeSlider" min="0" max="100" step="1" value="70">
+            <button class="volume-step-btn" id="volumeUpBtn" title="Sesi Artır">+</button>
+          </div>
         </div>
       </div>
     </div>
@@ -389,6 +570,8 @@
     const currentTrackName = document.getElementById("currentTrackName");
     const currentTrackMeta = document.getElementById("currentTrackMeta");
     const statusBox = document.getElementById("statusBox");
+    const bottomTrackTitle = document.getElementById("bottomTrackTitle");
+    const bottomTrackMeta = document.getElementById("bottomTrackMeta");
     const progressFill = document.getElementById("progressFill");
     const timeCurrent = document.getElementById("timeCurrent");
     const timeTotal = document.getElementById("timeTotal");
@@ -427,7 +610,7 @@
           item.className = index === activeIndex ? "song-item active" : "song-item";
           item.innerHTML = `
             <div class="song-name">${name}</div>
-            <button class="song-action" data-index="${index}">Seç</button>
+            <button class="song-action" data-index="${index}" title="Seç">▶</button>
           `;
           playlistList.appendChild(item);
         });
@@ -440,10 +623,15 @@
         });
       }
 
-      currentTrackName.textContent = state.current_name || "Henüz şarkı seçilmedi";
-      currentTrackMeta.textContent = state.running
+      const currentName = state.current_name || "Henüz şarkı seçilmedi";
+      const currentMeta = state.running
         ? (state.pause ? "Durum: Duraklatıldı" : "Durum: Çalıyor")
         : "Durum: Hazır";
+
+      currentTrackName.textContent = currentName;
+      currentTrackMeta.textContent = currentMeta;
+      bottomTrackTitle.textContent = currentName;
+      bottomTrackMeta.textContent = currentMeta;
 
       const duration = Number(state.duration || 0);
       const timePos = Number(state.time_pos || 0);
@@ -474,6 +662,7 @@
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ command, payload })
       });
+
       setTimeout(loadState, 250);
     }
 
@@ -481,25 +670,27 @@
     document.getElementById("pauseBtn").addEventListener("click", () => sendCommand("pause"));
     document.getElementById("nextBtn").addEventListener("click", () => sendCommand("next"));
     document.getElementById("prevBtn").addEventListener("click", () => sendCommand("prev"));
-    document.getElementById("volumeDownBtn").addEventListener("click", () => {
-      const next = Math.max(0, Number(volumeSlider.value) - 5);
-      volumeSlider.value = next;
-      volumeValue.textContent = next;
-      sendCommand("volume", { volume: next });
-    });
-    
-    document.getElementById("volumeUpBtn").addEventListener("click", () => {
-      const next = Math.min(100, Number(volumeSlider.value) + 5);
-      volumeSlider.value = next;
-      volumeValue.textContent = next;
-      sendCommand("volume", { volume: next });
-    });
+
     volumeSlider.addEventListener("input", () => {
       volumeValue.textContent = volumeSlider.value;
     });
 
     volumeSlider.addEventListener("change", () => {
       sendCommand("volume", { volume: Number(volumeSlider.value) });
+    });
+
+    document.getElementById("volumeDownBtn").addEventListener("click", () => {
+      const next = Math.max(0, Number(volumeSlider.value) - 5);
+      volumeSlider.value = next;
+      volumeValue.textContent = next;
+      sendCommand("volume", { volume: next });
+    });
+
+    document.getElementById("volumeUpBtn").addEventListener("click", () => {
+      const next = Math.min(100, Number(volumeSlider.value) + 5);
+      volumeSlider.value = next;
+      volumeValue.textContent = next;
+      sendCommand("volume", { volume: next });
     });
 
     loadState();
