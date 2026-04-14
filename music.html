@@ -169,23 +169,67 @@
 
     .bottom-player {
       position: fixed;
-      left: 14px;
-      right: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: min(920px, calc(100vw - 28px));
       bottom: 14px;
       z-index: 20;
-      max-width: 1100px;
-      margin: 0 auto;
-      background: linear-gradient(180deg, rgba(27, 24, 22, 0.97), rgba(20, 18, 18, 0.97));
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 24px;
+      background:
+        linear-gradient(180deg, rgba(27, 24, 22, 0.92), rgba(20, 18, 18, 0.94));
+      border: 1px solid rgba(255, 236, 186, 0.10);
+      border-radius: 26px;
       box-shadow:
-        0 18px 40px rgba(0,0,0,0.42),
-        inset 0 1px 0 rgba(255,255,255,0.03);
-      backdrop-filter: blur(12px);
+        0 22px 46px rgba(0,0,0,0.46),
+        0 0 0 1px rgba(214, 177, 92, 0.08),
+        0 0 24px rgba(214, 177, 92, 0.12),
+        inset 0 1px 0 rgba(255,255,255,0.04);
+      backdrop-filter: blur(16px);
       overflow: hidden;
+    }
+    
+    .bottom-player::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: 26px;
+      pointer-events: none;
+      background:
+        linear-gradient(
+          180deg,
+          rgba(255, 228, 173, 0.08) 0%,
+          rgba(255, 228, 173, 0.02) 24%,
+          rgba(255,255,255,0) 40%
+        );
+    }
+    
+    .bottom-player::after {
+      content: "";
+      position: absolute;
+      inset: -1px;
+      border-radius: 26px;
+      pointer-events: none;
+      background:
+        linear-gradient(
+          135deg,
+          rgba(224, 191, 122, 0.18),
+          rgba(255,255,255,0.02) 28%,
+          rgba(224, 191, 122, 0.10) 62%,
+          rgba(255,255,255,0.01) 100%
+        );
+      mask:
+        linear-gradient(#000 0 0) content-box,
+        linear-gradient(#000 0 0);
+      -webkit-mask:
+        linear-gradient(#000 0 0) content-box,
+        linear-gradient(#000 0 0);
+      padding: 1px;
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
     }
 
     .bottom-player-inner {
+      position: relative;
+      z-index: 1;
       padding: 14px 18px 14px;
     }
     
@@ -257,7 +301,11 @@
       height: 64px;
       font-size: 28px;
       border-radius: 20px;
-      background: linear-gradient(135deg, #a67a33, #75511f);
+      background: linear-gradient(135deg, #b28336, #7b5520);
+      box-shadow:
+        0 14px 28px rgba(111, 77, 31, 0.34),
+        0 0 18px rgba(214, 177, 92, 0.16),
+        inset 0 1px 0 rgba(255, 232, 186, 0.14);
     }
 
     .progress-wrap {
