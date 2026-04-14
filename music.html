@@ -722,13 +722,14 @@
         });
       }
 
-      const currentName = state.current_name || "Henüz şarkı seçilmedi";
-      const currentMeta = state.running
+      const currentTitle = state.current_title || state.current_name || "Henüz şarkı seçilmedi";
+      const currentArtist = state.current_artist || "Mami Frame";
+      const playbackState = state.running
         ? (state.pause ? "Duraklatıldı" : "Çalıyor")
         : "Hazır";
-
-      bottomTrackTitle.textContent = currentName;
-      bottomTrackMeta.textContent = currentMeta;
+      
+      bottomTrackTitle.textContent = currentTitle;
+      bottomTrackMeta.textContent = `${currentArtist} • ${playbackState}`;
 
       const duration = Number(state.duration || 0);
       const timePos = Number(state.time_pos || 0);
