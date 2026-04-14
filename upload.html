@@ -450,7 +450,7 @@
       grid.innerHTML = "";
 
       if (!currentImages.length) {
-        grid.innerHTML = "<p>Henüz görsel yok</p>";
+        grid.innerHTML = "<p>Henüz hatıra yok</p>";
         return;
       }
 
@@ -465,11 +465,11 @@
             <img class="thumb" src="${image.image_url}" alt="${image.filename}">
           </div>
           <div class="filename">${image.filename}<br><span style="opacity:.65;font-size:12px;">${image.local_name}</span></div>
-        ${image.local_name === currentDisplay ? '<div class="badge">Şu an gösteriliyor</div>' : ''}
+        ${image.local_name === currentDisplay ? '<div class="badge">Şu an anımsanıyor</div>' : ''}
           <div class="actions">
-            <button class="upload-btn show-now-btn" type="button" data-id="${image.id}">Şimdi Göster</button>
-            <button class="save-btn replace-btn" type="button" data-id="${image.id}">Değiştir</button>
-            <button class="delete-btn" type="button" data-id="${image.id}">Sil</button>
+            <button class="upload-btn show-now-btn" type="button" data-id="${image.id}">Hatırayı anımsa</button>
+            <button class="save-btn replace-btn" type="button" data-id="${image.id}">Güncelle</button>
+            <button class="delete-btn" type="button" data-id="${image.id}">Hatırayı Unut</button>
           </div>
         `;
 
@@ -494,11 +494,11 @@
           const data = await res.json();
 
           if (!data.ok) {
-            showMessage(data.error || "Silinemedi", true);
+            showMessage(data.error || "Hatıra unutulamadı.", true);
             return;
           }
 
-          showMessage("Görsel silindi.");
+          showMessage("Hatıra unutuldu.");
           await loadState();
         });
       });
@@ -517,11 +517,11 @@
           const data = await res.json();
     
           if (!data.ok) {
-            showMessage(data.error || "Görsel hemen gösterilemedi", true);
+            showMessage(data.error || "Hatıra hemen gösterilemedi", true);
             return;
           }
     
-          showMessage("Görsel hemen gösterilmek üzere işaretlendi.");
+          showMessage("Hatıra hemen anımsanmak üzere işaretlendi.");
         });
       });
     }
@@ -549,11 +549,11 @@
             const data = await res.json();
     
             if (!data.ok) {
-              showMessage(data.error || "Görsel değiştirilemedi", true);
+              showMessage(data.error || "Hatıra güncellenemedi", true);
               return;
             }
     
-            showMessage("Görsel güncellendi.");
+            showMessage("Hatıra güncellendi.");
             await loadState();
           };
     
@@ -659,7 +659,7 @@ setInterval(() => {
         return;
       }
 
-      showMessage("Geçiş süresi güncellendi.");
+      showMessage("Hatıra süresi güncellendi.");
     });
 
     document.getElementById("saveOrderBtn").addEventListener("click", async () => {
