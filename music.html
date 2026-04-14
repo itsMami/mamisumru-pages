@@ -698,20 +698,23 @@
           </div>
         `;
       } else {
-        playlist.forEach((name, index) => {
+        playlist.forEach((track, index) => {
+          const name = typeof track === "string" ? track : (track.name || "");
+          const duration = typeof track === "string" ? 0 : Number(track.duration || 0);
+        
           const row = document.createElement("div");
           row.className = index === activeIndex ? "song-row active" : "song-row";
-
+        
           const isActive = index === activeIndex;
           const iconHtml = isActive && state.running && !state.pause
             ? buildEq()
             : `<button class="row-icon-btn" data-index="${index}" title="Seç">▶</button>`;
-
+        
           row.innerHTML = `
             <div class="col-icon">${iconHtml}</div>
             <div class="song-title">${name}</div>
             <div class="song-meta">${deriveArtist(name)}</div>
-            <div class="song-duration">${formatTime(state.duration || 0)}</div>
+            <div class="song-duration">${formatTime(duration)}</div>
           `;
           playlistList.appendChild(row);
         });
