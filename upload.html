@@ -336,9 +336,23 @@
       </form>
 
       <form id="timerForm">
-        <div class="field">
-          <label>Geçiş süresi (saniye)</label>
-          <input type="number" id="refreshTime" min="1" step="1" required>
+        <div class="row">
+          <div class="field">
+            <label>Gün</label>
+            <input type="number" id="refreshDays" min="0" step="1" value="0">
+          </div>
+          <div class="field">
+            <label>Saat</label>
+            <input type="number" id="refreshHours" min="0" step="1" value="0">
+          </div>
+          <div class="field">
+            <label>Dakika</label>
+            <input type="number" id="refreshMinutes" min="0" step="1" value="0">
+          </div>
+          <div class="field">
+            <label>Saniye</label>
+            <input type="number" id="refreshSeconds" min="0" step="1" value="0">
+          </div>
         </div>
         <button class="save-btn" type="submit">Süreyi Kaydet</button>
       </form>
@@ -366,11 +380,15 @@
       el.innerHTML = `<div class="msg" style="${isError ? 'border-color: rgba(200,80,80,0.35);' : ''}">${text}</div>`;
     }
 
-    function formatCountdown(seconds) {
-      const safe = Math.max(0, Math.floor(seconds));
-      const mins = String(Math.floor(safe / 60)).padStart(2, "0");
-      const secs = String(safe % 60).padStart(2, "0");
-      return `${mins}:${secs}`;
+    function formatCountdown(totalSeconds) {
+      const safe = Math.max(0, Math.floor(totalSeconds));
+    
+      const days = Math.floor(safe / 86400);
+      const hours = Math.floor((safe % 86400) / 3600);
+      const minutes = Math.floor((safe % 3600) / 60);
+      const seconds = safe % 60;
+    
+      return `${days}g ${hours}sa ${minutes}dk ${seconds}sn`;
     }
     
     function updateCountdownUI() {
@@ -409,6 +427,44 @@
       recalc();
       countdownInterval = setInterval(recalc, 1000);
     }
+
+    function secondsToParts(totalSeconds) {
+      const safe = Math.max(0, Math.floor(totalSeconds));
+    
+      const days = Math.floor(safe / 86400);
+      const hours = Math.floor((safe % 86400) / 3600);
+      const minutes = Math.floor((safe % 3600) / 60);
+      const seconds = safe % 60;
+    
+      return { days, hours, minutes, seconds };
+    }
+    
+    function partsToSeconds(days, hours, minutes, seconds) {
+      return (
+        Math.max(0, Number(days) || 0) * 86400 +
+        Math.max(0, Number(hours) || 0) * 3600 +
+        Math.max(0, Number(minutes) || 0) * 60 +
+        Math.max(0, Number(seconds) || 0)
+      );
+    }
+    
+    function setRefreshInputs(totalSeconds) {
+      const parts = secondsToParts(totalSeconds);
+      document.getElementById("refreshDays").value = parts.days;
+      document.getElementById("refreshHours").value = parts.hours;
+      document.getElementById("refreshMinutes").value = parts.minutes;
+      document.getElementById("refreshSeconds").value = parts.seconds;
+    }
+    
+    function getRefreshInputsAsSeconds() {
+      return partsToSeconds(
+        document.getElementById("refreshDays").value,
+        document.getElementById("refreshHours").value,
+        document.getElementById("refreshMinutes").value,
+        document.getElementById("refreshSeconds").value
+      );
+    }
+
     async function loadState() {
       const res = await fetch("/api/state");
       const data = await res.json();
@@ -423,7 +479,7 @@
       const lastChangeTime = data.last_change_time || "";
       const incomingRefresh = Number(data.refresh_time || 600);
     
-      document.getElementById("refreshTime").value = incomingRefresh;
+      setRefreshInputs(incomingRefresh);
     
       const currentImage = currentImages.find(img => img.local_name === currentDisplay);
     
@@ -644,22 +700,28 @@ setInterval(() => {
 
     document.getElementById("timerForm").addEventListener("submit", async (e) => {
       e.preventDefault();
-      const refreshTime = Number(document.getElementById("refreshTime").value);
-
+    
+      const refreshTime = getRefreshInputsAsSeconds();
+    
+      if (refreshTime <= 0) {
+        showMessage("Lütfen 0'dan büyük bir anımsama süresi girin.", true);
+        return;
+      }
+    
       const res = await fetch("/api/refresh", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ refresh_time: refreshTime })
       });
-
+    
       const data = await res.json();
-
+    
       if (!data.ok) {
         showMessage(data.error || "Süre kaydedilemedi", true);
         return;
       }
-
-      showMessage("Hatıra süresi güncellendi.");
+    
+      showMessage("Geçiş süresi güncellendi.");
     });
 
     document.getElementById("saveOrderBtn").addEventListener("click", async () => {
