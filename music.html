@@ -662,13 +662,6 @@
       return `${mins}:${String(secs).padStart(2, "0")}`;
     }
 
-    function deriveArtist(name) {
-      if (!name) return "—";
-      const cleaned = name.replace(/\.[^/.]+$/, "");
-      const parts = cleaned.split(" - ");
-      return parts.length > 1 ? parts[0] : "Mami Frame";
-    }
-
     function buildEq() {
       return `
         <span class="mini-eq">
@@ -699,8 +692,10 @@
         `;
       } else {
         playlist.forEach((track, index) => {
-          const name = typeof track === "string" ? track : (track.name || "");
-          const duration = typeof track === "string" ? 0 : Number(track.duration || 0);
+          const name = track.name || "";
+          const title = track.title || name;
+          const artist = track.artist || "Mami Frame";
+          const duration = Number(track.duration || 0);
         
           const row = document.createElement("div");
           row.className = index === activeIndex ? "song-row active" : "song-row";
@@ -712,8 +707,8 @@
         
           row.innerHTML = `
             <div class="col-icon">${iconHtml}</div>
-            <div class="song-title">${name}</div>
-            <div class="song-meta">${deriveArtist(name)}</div>
+            <div class="song-title">${title}</div>
+            <div class="song-meta">${artist}</div>
             <div class="song-duration">${formatTime(duration)}</div>
           `;
           playlistList.appendChild(row);
