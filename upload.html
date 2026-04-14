@@ -467,6 +467,7 @@
           <div class="filename">${image.filename}<br><span style="opacity:.65;font-size:12px;">${image.local_name}</span></div>
         ${image.local_name === currentDisplay ? '<div class="badge">Şu an gösteriliyor</div>' : ''}
           <div class="actions">
+            <button class="upload-btn show-now-btn" type="button" data-id="${image.id}">Şimdi Göster</button>
             <button class="save-btn replace-btn" type="button" data-id="${image.id}">Değiştir</button>
             <button class="delete-btn" type="button" data-id="${image.id}">Sil</button>
           </div>
@@ -478,6 +479,7 @@
       setupDragAndDrop();
       setupDeleteButtons();
       setupReplaceButtons();
+      setupShowNowButtons();
     }
 
     function setupDeleteButtons() {
@@ -501,7 +503,28 @@
         });
       });
     }
-
+    function setupShowNowButtons() {
+      document.querySelectorAll(".show-now-btn").forEach((btn) => {
+        btn.addEventListener("click", async () => {
+          const id = Number(btn.dataset.id);
+    
+          const res = await fetch("/api/show-now", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ id })
+          });
+    
+          const data = await res.json();
+    
+          if (!data.ok) {
+            showMessage(data.error || "Görsel hemen gösterilemedi", true);
+            return;
+          }
+    
+          showMessage("Görsel hemen gösterilmek üzere işaretlendi.");
+        });
+      });
+    }
     function setupReplaceButtons() {
       document.querySelectorAll(".replace-btn").forEach((btn) => {
         btn.addEventListener("click", async () => {
