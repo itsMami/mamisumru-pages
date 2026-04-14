@@ -756,7 +756,7 @@
         body: JSON.stringify({ command, payload })
       });
 
-      setTimeout(loadState, 180);
+      setTimeout(loadState, 100);
     }
 
     document.getElementById("playBtn").addEventListener("click", () => sendCommand("play"));
@@ -787,7 +787,7 @@
     });
 
     loadState();
-    setInterval(loadState, 1000);
+    setInterval(loadState, 500);
   </script>
 </body>
 </html>
