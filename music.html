@@ -144,9 +144,37 @@
 
     .controls {
       display: flex;
-      gap: 10px;
+      gap: 12px;
       flex-wrap: wrap;
-      margin: 18px 0 16px;
+      margin: 18px 0 18px;
+      align-items: center;
+    }
+    .icon-btn {
+      min-width: 74px;
+      height: 62px;
+      padding: 0;
+      border-radius: 18px;
+      font-size: 26px;
+      display: grid;
+      place-items: center;
+      line-height: 1;
+      box-shadow:
+        0 12px 24px rgba(0,0,0,0.24),
+        inset 0 1px 0 rgba(255, 228, 173, 0.10);
+    }
+    .play-main-btn {
+      min-width: 92px;
+      height: 72px;
+      font-size: 32px;
+      border-radius: 22px;
+      background: linear-gradient(135deg, #a67a33, #75511f);
+      box-shadow:
+        0 16px 30px rgba(111, 77, 31, 0.30),
+        inset 0 1px 0 rgba(255, 228, 173, 0.14);
+    }
+    .icon-btn:hover {
+      transform: translateY(-1px) scale(1.02);
+      filter: brightness(1.06);
     }
 
     .control-btn {
@@ -162,14 +190,65 @@
 
     .control-btn.secondary { background: linear-gradient(135deg, #5f4b2f, #473521); }
 
-    .volume-row {
-      display: flex;
-      gap: 12px;
-      align-items: center;
-      font-family: Arial, sans-serif;
+    .volume-panel {
+      margin-top: 16px;
+      padding: 16px 16px 14px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.06);
     }
 
-    input[type="range"] { width: 100%; }
+    .volume-top {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+      font-family: Arial, sans-serif;
+    }
+    
+    .volume-icon {
+      font-size: 18px;
+    }
+    
+    .volume-title {
+      color: #e6d7bf;
+      font-size: 14px;
+      font-weight: 700;
+    }
+    
+    .volume-badge {
+      margin-left: auto;
+      min-width: 46px;
+      text-align: center;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(214, 177, 92, 0.12);
+      border: 1px solid rgba(214, 177, 92, 0.18);
+      color: #ffe8b8;
+      font-size: 13px;
+      font-weight: 700;
+    }
+    
+    .volume-row {
+      display: grid;
+      grid-template-columns: 48px 1fr 48px;
+      gap: 10px;
+      align-items: center;
+    }
+    
+    .volume-step-btn {
+      height: 44px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.08);
+      color: #fff4e3;
+      font-size: 24px;
+      cursor: pointer;
+    }
+
+
+
+
 
     .section-title { margin: 0 0 14px 0; font-size: 28px; color: #fff0d2; }
 
@@ -271,15 +350,24 @@
             </div>
 
             <div class="controls">
-              <button class="control-btn secondary" id="prevBtn">⏮</button>
-              <button class="control-btn" id="playBtn">▶</button>
-              <button class="control-btn secondary" id="pauseBtn">⏸</button>
-              <button class="control-btn secondary" id="nextBtn">⏭</button>
+              <button class="control-btn secondary icon-btn" id="prevBtn" title="Önceki">⏮︎</button>
+              <button class="control-btn icon-btn play-main-btn" id="playBtn" title="Oynat">▶︎</button>
+              <button class="control-btn secondary icon-btn" id="pauseBtn" title="Duraklat">⏸︎</button>
+              <button class="control-btn secondary icon-btn" id="nextBtn" title="Sonraki">⏭︎</button>
             </div>
 
-            <div class="volume-row">
-              <input type="range" id="volumeSlider" min="0" max="100" step="1" value="70">
-              <span id="volumeValue">70</span>
+            <div class="volume-panel">
+              <div class="volume-top">
+                <span class="volume-icon">🔊</span>
+                <span class="volume-title">Ses Seviyesi</span>
+                <span id="volumeValue" class="volume-badge">70</span>
+              </div>
+            
+              <div class="volume-row">
+                <button class="volume-step-btn" id="volumeDownBtn" title="Sesi Azalt">−</button>
+                <input type="range" id="volumeSlider" min="0" max="100" step="1" value="100">
+                <button class="volume-step-btn" id="volumeUpBtn" title="Sesi Arttır">+</button>
+              </div>
             </div>
 
             <div class="status-box" id="statusBox">Sunucudan durum bekleniyor...</div>
@@ -386,14 +474,26 @@
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ command, payload })
       });
-      setTimeout(loadState, 700);
+      setTimeout(loadState, 250);
     }
 
     document.getElementById("playBtn").addEventListener("click", () => sendCommand("play"));
     document.getElementById("pauseBtn").addEventListener("click", () => sendCommand("pause"));
     document.getElementById("nextBtn").addEventListener("click", () => sendCommand("next"));
     document.getElementById("prevBtn").addEventListener("click", () => sendCommand("prev"));
-
+    document.getElementById("volumeDownBtn").addEventListener("click", () => {
+      const next = Math.max(0, Number(volumeSlider.value) - 5);
+      volumeSlider.value = next;
+      volumeValue.textContent = next;
+      sendCommand("volume", { volume: next });
+    });
+    
+    document.getElementById("volumeUpBtn").addEventListener("click", () => {
+      const next = Math.min(100, Number(volumeSlider.value) + 5);
+      volumeSlider.value = next;
+      volumeValue.textContent = next;
+      sendCommand("volume", { volume: next });
+    });
     volumeSlider.addEventListener("input", () => {
       volumeValue.textContent = volumeSlider.value;
     });
@@ -403,7 +503,7 @@
     });
 
     loadState();
-    setInterval(loadState, 3000);
+    setInterval(loadState, 1000);
   </script>
 </body>
 </html>
