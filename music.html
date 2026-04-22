@@ -19,7 +19,6 @@
       --text: #f7eddc;
       --muted: #c7b8a1;
       --muted-2: #a89a86;
-      --panel: rgba(11, 12, 16, 0.55);
     }
 
     body {
@@ -525,8 +524,7 @@
 
       <div class="bottom-controls">
         <button class="ctrl-btn" id="prevBtn" title="Önceki" type="button">⏮</button>
-        <button class="ctrl-btn play-main" id="playBtn" title="Oynat" type="button">▶</button>
-        <button class="ctrl-btn" id="pauseBtn" title="Duraklat" type="button">⏸</button>
+        <button class="ctrl-btn play-main" id="playToggleBtn" title="Oynat / Duraklat" type="button">▶</button>
         <button class="ctrl-btn" id="nextBtn" title="Sonraki" type="button">⏭</button>
       </div>
 
@@ -565,6 +563,7 @@
     const timeCurrent = document.getElementById("timeCurrent");
     const timeTotal = document.getElementById("timeTotal");
     const volumeSlider = document.getElementById("volumeSlider");
+    const playToggleBtn = document.getElementById("playToggleBtn");
 
     function formatTime(seconds) {
       const s = Number(seconds || 0);
@@ -687,6 +686,10 @@
       }
 
       volumeSlider.value = state.volume ?? 70;
+
+      const isPlaying = state.running && !state.pause;
+      playToggleBtn.dataset.state = isPlaying ? "playing" : "paused";
+      playToggleBtn.textContent = isPlaying ? "⏸" : "▶";
     }
 
     async function sendCommand(command, payload = {}) {
@@ -710,10 +713,13 @@
       setTimeout(loadState, 180);
     }
 
-    document.getElementById("playBtn").addEventListener("click", () => sendCommand("play"));
-    document.getElementById("pauseBtn").addEventListener("click", () => sendCommand("pause"));
-    document.getElementById("nextBtn").addEventListener("click", () => sendCommand("next"));
     document.getElementById("prevBtn").addEventListener("click", () => sendCommand("prev"));
+    document.getElementById("nextBtn").addEventListener("click", () => sendCommand("next"));
+
+    playToggleBtn.addEventListener("click", () => {
+      const isPlaying = playToggleBtn.dataset.state === "playing";
+      sendCommand(isPlaying ? "pause" : "play");
+    });
 
     volumeSlider.addEventListener("change", () => {
       sendCommand("volume", { volume: Number(volumeSlider.value) });
