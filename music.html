@@ -15,7 +15,6 @@
       --line-soft: rgba(255,255,255,0.05);
       --gold: #d7a54a;
       --gold-2: #f0c66d;
-      --gold-soft: rgba(215, 165, 74, 0.18);
       --text: #f7eddc;
       --muted: #c7b8a1;
       --muted-2: #a89a86;
@@ -90,12 +89,44 @@
     }
 
     .subtitle {
-      margin: 0 0 20px 0;
+      margin: 0 0 16px 0;
       max-width: 760px;
       font-family: Arial, sans-serif;
       font-size: 15px;
       line-height: 1.8;
       color: #d7c9b1;
+    }
+
+    .pi-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin: 0 0 20px 0;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      font-family: Arial, sans-serif;
+      font-size: 14px;
+      color: #eadcc0;
+    }
+
+    .pi-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #888;
+      box-shadow: 0 0 8px rgba(255,255,255,0.15);
+    }
+
+    .pi-dot.online {
+      background: #4fd16a;
+      box-shadow: 0 0 12px rgba(79,209,106,0.45);
+    }
+
+    .pi-dot.offline {
+      background: #e35d5d;
+      box-shadow: 0 0 12px rgba(227,93,93,0.45);
     }
 
     .playlist-shell {
@@ -120,7 +151,7 @@
     }
 
     .playlist-list {
-      max-height: calc(100vh - 350px);
+      max-height: calc(100vh - 390px);
       overflow: auto;
     }
 
@@ -133,7 +164,7 @@
       min-height: 74px;
       padding: 0 18px;
       border-bottom: 1px solid rgba(255,255,255,0.045);
-      transition: background 0.18s ease, transform 0.18s ease;
+      transition: background 0.18s ease;
     }
 
     .song-row:hover {
@@ -460,10 +491,6 @@
         font-size: 36px;
       }
 
-      .section-title {
-        font-size: 22px;
-      }
-
       .bottom-player {
         width: calc(100vw - 18px);
         bottom: 10px;
@@ -503,6 +530,11 @@
       <h1>Büyülü Müzik Odası</h1>
       <div class="subtitle">
         Hatıraları melodilere dönüştürmek için hazırlandı.
+      </div>
+
+      <div class="pi-status" id="piStatus">
+        <span class="pi-dot" id="piDot"></span>
+        <span id="piStatusText">Raspberry Pi kontrol ediliyor...</span>
       </div>
 
       <div class="playlist-shell">
@@ -564,6 +596,8 @@
     const timeTotal = document.getElementById("timeTotal");
     const volumeSlider = document.getElementById("volumeSlider");
     const playToggleBtn = document.getElementById("playToggleBtn");
+    const piDot = document.getElementById("piDot");
+    const piStatusText = document.getElementById("piStatusText");
 
     function formatTime(seconds) {
       const s = Number(seconds || 0);
@@ -594,9 +628,7 @@
       commandLocked = true;
       lastCommandSignature = signature;
 
-      if (unlockTimer) {
-        clearTimeout(unlockTimer);
-      }
+      if (unlockTimer) clearTimeout(unlockTimer);
 
       unlockTimer = setTimeout(() => {
         commandLocked = false;
@@ -618,6 +650,20 @@
       const playlist = data.playlist || [];
       const state = data.state || {};
       const activeIndex = Number(state.current_index || 0);
+
+      const now = Date.now() / 1000;
+      const lastSeen = Number(state.last_seen || 0);
+      const secondsAgo = now - lastSeen;
+
+      if (lastSeen > 0 && secondsAgo <= 10) {
+        piDot.classList.remove("offline");
+        piDot.classList.add("online");
+        piStatusText.textContent = "Raspberry Pi aktif";
+      } else {
+        piDot.classList.remove("online");
+        piDot.classList.add("offline");
+        piStatusText.textContent = "Raspberry Pi çevrimdışı";
+      }
 
       playlistList.innerHTML = "";
 
@@ -693,9 +739,7 @@
     }
 
     async function sendCommand(command, payload = {}) {
-      if (shouldSkipCommand(command, payload)) {
-        return;
-      }
+      if (shouldSkipCommand(command, payload)) return;
 
       const signature = makeCommandSignature(command, payload);
       lockCommand(signature);
